@@ -3,34 +3,71 @@ import Cookies from 'js-cookie';
 interface Credentials {
   id: string;
   password: string;
+  email: string
 }
 
-// 더미 사용자 저장소 (배열 형태로 수정)
-const DUMMY_USERS: Credentials[] = [
-  { id: 'master', password: '1234' },
-];
+export const registerUser = async (newUser: Credentials): Promise<boolean> => {
+  try {
+    const response = await fetch('http://52.79.53.159:3000/api/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: newUser.id,  
+        password: newUser.password,
+        email: newUser.email, 
+      }),
+    });
 
-export const authenticateUser = (credentials: Credentials): boolean => {
-  return DUMMY_USERS.some(
-    (user) => user.id === credentials.id && user.password === credentials.password
-  );
-};
+    const result = await response.json();
+    console.log('서버 응답:', result);
 
-// 회원가입 함수
-export const registerUser = (newUser: Credentials): boolean => {
-  // 아이디가 이미 존재하는지 확인
-  const userExists = DUMMY_USERS.some((user) => user.id === newUser.id);
-
-  if (userExists) {
-    console.error('User already exists');
-    return false; // 사용자 중복
+    if (response.ok) {
+      console.log('User registered successfully');
+      return true; 
+    } else {
+      console.error('Failed to register user');
+      return false;  
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return false;
   }
-
-  // 새로운 사용자 추가
-  DUMMY_USERS.push(newUser);
-  console.log('User registered:', newUser);
-  return true;
 };
+
+export const authenticateUser = async (credentials: Credentials): Promise<boolean> => {
+  try {
+    const response = await fetch('http://52.79.53.159:3000/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: credentials.id,  
+        password: credentials.password,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('User authenticated successfully:', data);
+      // 로그인 성공 후 필요한 정보(예: JWT 토큰) 저장
+      Cookies.set('auth', 'true', { expires: 7 });
+      return true; 
+    } else {
+      console.error('Failed to authenticate user');
+      return false;  
+    }
+  } catch (error) {
+    console.error('Error authenticating user:', error);
+    return false;
+  }
+};
+
+
 
 export const logout = () => {
   try {

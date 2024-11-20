@@ -8,6 +8,7 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     id: '',
     password: '',
+    email: ''
   });
   const [error, setError] = useState('');
 
@@ -19,12 +20,12 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     // 회원가입 시도
-    const success = registerUser(formData);
+    const success = await registerUser(formData);
     if (success) {
       router.push('/login'); // 회원가입 성공 시 로그인 페이지로 이동
     } else {
@@ -71,6 +72,20 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleChange}
             placeholder="비밀번호"
+            required
+            className="w-full rounded-lg border px-4 py-2 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            이메일
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="이메일"
             required
             className="w-full rounded-lg border px-4 py-2 dark:bg-gray-800 dark:text-white"
           />

@@ -19,11 +19,14 @@ export default function LoginForm() {
   const [formData, setFormData] = useState({
     id: '',
     password: '',
+    email: ''
   });
+  
   const [formErrors, setFormErrors] = useState<FormErrors>({
     id: '',
     password: '',
   });
+
   const [touched, setTouched] = useState({
     id: false,
     password: false,
@@ -83,12 +86,19 @@ export default function LoginForm() {
       return;
     }
 
-    if (authenticateUser(formData)) {
+    /*if (authenticateUser(formData)) {
       Cookies.set('auth', 'true', { expires: 7 });
       router.push('/dashboard');
     } else {
       setError('아이디 또는 비밀번호가 올바르지 않습니다.');
-    }
+    }*/
+   // 로그인 시도
+   const success = await authenticateUser(formData);
+   if (success) {
+     router.push('/dashboard');
+   } else {
+     setError('아이디 또는 비밀번호가 올바르지 않습니다.');
+   }
   };
 
   return (
