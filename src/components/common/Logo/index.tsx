@@ -18,7 +18,7 @@ const SIZES = {
 
 export default function Logo({ variant = 'main', size = 'md', className = '' }: LogoProps) {
   const { width, height } = SIZES[size];
-  const imagePath = `/images/logo-${variant}.png`;
+  const imagePath = `/images/logo-${variant}.svg`;
 
   return (
     <Link href="/" className={`flex items-center ${className}`}>

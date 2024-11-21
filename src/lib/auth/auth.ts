@@ -3,17 +3,71 @@ import Cookies from 'js-cookie';
 interface Credentials {
   id: string;
   password: string;
+  email: string
 }
 
-// 더미 사용자 데이터
-const DUMMY_USER = {
-  id: 'master',
-  password: '1234',
+export const registerUser = async (newUser: Credentials): Promise<boolean> => {
+  try {
+    const response = await fetch('http://52.79.53.159:3000/api/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: newUser.id,  
+        password: newUser.password,
+        email: newUser.email, 
+      }),
+    });
+
+    const result = await response.json();
+    console.log('서버 응답:', result);
+
+    if (response.ok) {
+      console.log('User registered successfully');
+      return true; 
+    } else {
+      console.error('Failed to register user');
+      return false;  
+    }
+  } catch (error) {
+    console.error('Error registering user:', error);
+    return false;
+  }
 };
 
-export const authenticateUser = (credentials: Credentials): boolean => {
-  return credentials.id === DUMMY_USER.id && credentials.password === DUMMY_USER.password;
+export const authenticateUser = async (credentials: Credentials): Promise<boolean> => {
+  try {
+    const response = await fetch('http://52.79.53.159:3000/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        username: credentials.id,  
+        password: credentials.password,
+      }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('User authenticated successfully:', data);
+      // 로그인 성공 후 필요한 정보(예: JWT 토큰) 저장
+      Cookies.set('auth', 'true', { expires: 7 });
+      return true; 
+    } else {
+      console.error('Failed to authenticate user');
+      return false;  
+    }
+  } catch (error) {
+    console.error('Error authenticating user:', error);
+    return false;
+  }
 };
+
+
 
 export const logout = () => {
   try {
