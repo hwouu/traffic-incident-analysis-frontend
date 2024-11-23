@@ -5,6 +5,8 @@ import ThemeToggle from '../common/ThemeToggle';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import Logo from '@/components/common/Logo';
+
+// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -28,10 +30,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     <div className="flex min-h-screen bg-background dark:bg-dark-background">
       {/* Left Section - SVG Slider */}
       <div className="hidden w-1/2 bg-primary/10 lg:block dark:bg-primary-dark/20">
-        {/* 왼쪽 상단에 로고 추가 */}
-        <div className="absolute left-6 top-6 z-50">
-          <Logo variant="with-text" size="xl" />
+        <div className="absolute left-0 top-0 flex h-20 w-full items-center px-6">
+          <Logo variant="with-text" size="lg" />
         </div>
+
         <Swiper
           modules={[Autoplay, Pagination]}
           spaceBetween={0}
@@ -67,11 +69,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Right Section - Login Form */}
       <div className="flex w-full flex-col lg:w-1/2">
-        <div className="absolute right-4 top-4 z-10">
+        <div className="absolute right-0 top-0 flex h-20 w-full items-center justify-end px-6">
           <ThemeToggle />
         </div>
+
         <div className="flex min-h-screen w-full items-center justify-center bg-white px-6 transition-colors dark:bg-gray-900">
           <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
+            {/* Mobile Logo */}
+            <div className="mb-8 flex justify-center lg:hidden">
+              <Logo variant="with-text" size="lg" />
+            </div>
             {children}
           </div>
         </div>
