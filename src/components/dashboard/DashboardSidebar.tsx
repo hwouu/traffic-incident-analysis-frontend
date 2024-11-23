@@ -88,7 +88,7 @@ export default function DashboardSidebar() {
             <span className="text-xl font-bold text-gray-900 dark:text-white">TAS</span>
           ) : (
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              교통사고분석시스템
+              교통사고 분석 시스템
             </span>
           )}
         </div>

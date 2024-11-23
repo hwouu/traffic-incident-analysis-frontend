@@ -31,7 +31,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Left Section - SVG Slider */}
       <div className="hidden w-1/2 bg-primary/10 lg:block dark:bg-primary-dark/20">
         <div className="absolute left-0 top-0 flex h-20 w-full items-center px-6">
-          <Logo variant="with-text" size="lg" />
+          <Logo variant="with-text" size="md" />
         </div>
 
         <Swiper
@@ -77,7 +77,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
             {/* Mobile Logo */}
             <div className="mb-8 flex justify-center lg:hidden">
-              <Logo variant="with-text" size="lg" />
+              <Logo variant="with-text" size="md" />
             </div>
             {children}
           </div>
