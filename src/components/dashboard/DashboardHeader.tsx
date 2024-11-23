@@ -57,9 +57,6 @@ export default function DashboardHeader() {
              </span>
            )}
          </button>
-         <div className="h-8 w-8 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-           {/* 프로필 이미지가 있다면 추가 */}
-         </div>
        </div>
      </div>
    </header>
