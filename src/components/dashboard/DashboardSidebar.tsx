@@ -79,11 +79,7 @@ export default function DashboardSidebar() {
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="absolute -right-3 top-6 hidden h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 md:flex"
         >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
 
         {/* Logo */}
@@ -91,7 +87,9 @@ export default function DashboardSidebar() {
           {isCollapsed ? (
             <span className="text-xl font-bold text-gray-900 dark:text-white">TAS</span>
           ) : (
-            <span className="text-xl font-bold text-gray-900 dark:text-white">교통사고분석시스템</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
+              교통사고분석시스템
+            </span>
           )}
         </div>
 
@@ -118,13 +116,13 @@ export default function DashboardSidebar() {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="border-t border-gray-200 p-4 dark:border-gray-700">
+        <div className="border-t border-gray-200 px-2 py-4 dark:border-gray-700">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center space-x-2 rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="flex w-full items-center rounded-lg px-3 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : ''}`} />
-            {!isCollapsed && <span>로그아웃</span>}
+            {!isCollapsed && <span className="ml-2">로그아웃</span>}
           </button>
         </div>
       </aside>
