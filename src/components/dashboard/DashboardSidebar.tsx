@@ -3,14 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
+import {
   LayoutDashboard,
   FileText,
   MessageSquareText,
   BarChart3,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 import { logout } from '@/lib/auth/auth';
 
@@ -69,19 +69,17 @@ export default function DashboardSidebar() {
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="absolute -right-3 top-6 flex h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
       >
-        {isCollapsed ? (
-          <ChevronRight className="h-4 w-4" />
-        ) : (
-          <ChevronLeft className="h-4 w-4" />
-        )}
+        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>
 
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center border-b border-gray-200 px-4 dark:border-gray-700">
+      <div className="flex h-14 items-center justify-center border-b border-gray-200 px-4 dark:border-gray-700">
         {isCollapsed ? (
-          <span className="text-xl font-bold">TAS</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">TAS</span>
         ) : (
-          <span className="text-xl font-bold">교통사고분석시스템</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
+            교통사고분석시스템
+          </span>
         )}
       </div>
 

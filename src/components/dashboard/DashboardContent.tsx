@@ -1,18 +1,53 @@
 'use client';
 
-import { AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { AlertTriangle, Clock, CheckCircle, MessageSquareText, BarChart3 } from 'lucide-react';
+import { getCurrentUser } from '@/lib/auth/auth';
+import type { UserProfile } from '@/types/auth';
+import Link from 'next/link';
 
 export default function DashboardContent() {
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getCurrentUser();
+      if (userData) {
+        setUser(userData);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <div className="space-y-6 p-4">
       {/* Welcome Section */}
       <div className="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-          안녕하세요, 관리자님
+          안녕하세요, {user?.nickname || '사용자'}님
         </h2>
         <p className="mt-2 text-gray-600 dark:text-gray-300">
           교통사고 분석 시스템에 오신 것을 환영합니다.
         </p>
+        
+        {/* Quick Access Buttons */}
+        <div className="mt-4 flex space-x-4">
+          <Link
+            href="/dashboard/analysis/chat"
+            className="flex items-center rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+          >
+            <MessageSquareText className="mr-2 h-5 w-5" />
+            사고 신고 챗봇 시작
+          </Link>
+          <Link
+            href="/dashboard/analysis"
+            className="flex items-center rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+          >
+            <BarChart3 className="mr-2 h-5 w-5" />
+            사고 분석 목록 확인
+          </Link>
+        </div>
       </div>
 
       {/* Stats Grid */}
