@@ -32,13 +32,9 @@ export function WelcomeSlide() {
 
   return (
     <div className="relative h-full w-full">
-      {/* Logo */}
-      <div className="absolute left-6 top-6 z-50">
+      {/* 상단 헤더 영역 통합 */}
+      <div className="absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6">
         <Logo variant="with-text" size="lg" />
-      </div>
-
-      {/* Theme Toggle */}
-      <div className="absolute right-6 top-6 z-50">
         <ThemeToggle />
       </div>
 
