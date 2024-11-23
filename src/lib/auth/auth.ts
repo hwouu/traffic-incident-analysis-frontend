@@ -1,4 +1,5 @@
 import { setAuthToken, removeAuthToken } from '@/lib/utils/auth';
+import { UserProfile } from '@/types/auth';
 
 interface Credentials {
   id: string;
@@ -78,6 +79,13 @@ export const authenticateUser = async (credentials: Credentials): Promise<{succe
 
     if (data.accessToken) {
       setAuthToken(data.accessToken);
+      // 사용자 정보도 localStorage에 저장
+      localStorage.setItem('userInfo', JSON.stringify({
+        id: 1,
+        email: credentials.email || '',
+        nickname: credentials.id,  // username을 nickname으로 사용
+        userType: 'user'
+      }));
       return { success: true };
     }
 
@@ -85,6 +93,7 @@ export const authenticateUser = async (credentials: Credentials): Promise<{succe
       success: false, 
       message: '인증 토큰을 받지 못했습니다.' 
     };
+
   } catch (error) {
     console.error('Authentication error:', error);
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
@@ -111,15 +120,17 @@ export const logout = async (): Promise<void> => {
       }
     });
 
-    // 로컬 토큰 제거
+    // 로컬 토큰과 사용자 정보 제거
     removeAuthToken();
+    localStorage.removeItem('userInfo');  // 추가된 부분
     
     // 로그인 페이지로 리다이렉트
     window.location.href = '/login';
   } catch (error) {
     console.error('Logout error:', error);
-    // 에러가 발생해도 로컬 토큰은 제거하고 로그인 페이지로 이동
+    // 에러가 발생해도 로컬 토큰과 사용자 정보는 제거하고 로그인 페이지로 이동
     removeAuthToken();
+    localStorage.removeItem('userInfo');  // 추가된 부분
     window.location.href = '/login';
   }
 };
@@ -145,5 +156,19 @@ export const validateToken = async (): Promise<boolean> => {
     // 토큰 검증 실패 시 로그아웃 처리
     removeAuthToken();
     return false;
+  }
+};
+
+export const getCurrentUser = async (): Promise<UserProfile | null> => {
+  try {
+    // localStorage에서 사용자 정보 가져오기
+    const userInfo = localStorage.getItem('userInfo');
+    if (!userInfo) {
+      return null;
+    }
+    return JSON.parse(userInfo);
+  } catch (error) {
+    console.error('Error getting user data:', error);
+    return null;
   }
 };

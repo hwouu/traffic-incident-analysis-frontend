@@ -13,28 +13,24 @@ const SIZES = {
   sm: { width: 32, height: 32 },
   md: { width: 48, height: 48 },
   lg: { width: 64, height: 64 },
-  xl: { width: 96, height: 96 },  // 더 큰 크기 추가
+  xl: { width: 96, height: 96 },
 };
 
-export default function Logo({ variant = 'main', size = 'md', className = '' }: LogoProps) {
+export default function Logo({ variant = 'with-text', size = 'md', className = '' }: LogoProps) {
   const { width, height } = SIZES[size];
-  const imagePath = `/images/logo-${variant}.svg`;
 
   return (
     <Link href="/" className={`flex items-center ${className}`}>
       <div className="relative">
         <Image
-          src={imagePath}
-          alt="사고 탐정"
-          width={width}
+          src="/images/logo-with-text.svg"
+          alt="교통사고 분석 시스템"
+          width={width * 2}  // 로고+텍스트 SVG의 경우 가로가 더 길기 때문에 조정
           height={height}
           priority
           className="object-contain"
         />
       </div>
-      {variant === 'main' && (
-        <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">사고 탐정</span>
-      )}
     </Link>
   );
 }
