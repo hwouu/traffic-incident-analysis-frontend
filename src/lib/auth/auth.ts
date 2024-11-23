@@ -54,8 +54,7 @@ export const authenticateUser = async (credentials: Credentials): Promise<{succe
     console.log('서버 응답:', result);
 
     if (response.ok) {
-      const data = await response.json();
-      console.log('User authenticated successfully:', data);
+      console.log('User authenticated successfully:', result);
       // 로그인 성공 후 필요한 정보(예: JWT 토큰) 저장
       Cookies.set('auth', 'true', { expires: 7 });
       return { success: true };
