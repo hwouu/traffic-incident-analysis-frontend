@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, A11y, EffectFade, Autoplay } from 'swiper/modules';
 import Link from 'next/link';
 import Logo from '@/components/common/Logo';
 import SlideContent from './SlideContent';
+import { useTheme } from 'next-themes';
+import { useState, useEffect } from 'react';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -13,11 +14,24 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
 export function WelcomeSlide() {
+  const [mounted, setMounted] = useState(false);
+  const { theme } = useTheme();
+
+  // useEffect only runs on the client, so now we can safely show the UI
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   const slides = [
     {
       title: '교통사고 분석 시스템',
+      secondTitle: '사고탐정',
       description: '인공지능 기반의 실시간 교통사고 분석과 신고 시스템을 경험해보세요.',
-      image: '/images/slides/slide1.svg',
+      image: theme === 'dark' ? '/images/logo-dark-main.svg' : '/images/logo-light-main.svg',
     },
     {
       title: '신속한 사고 대응',
@@ -49,7 +63,7 @@ export function WelcomeSlide() {
           bulletClass: 'swiper-pagination-bullet',
         }}
         autoplay={{
-          delay: 5000,
+          delay: 3000,
           disableOnInteraction: false,
         }}
         className="h-full"
@@ -59,7 +73,7 @@ export function WelcomeSlide() {
             key={index}
             className="bg-background transition-colors dark:bg-dark-background"
           >
-            <SlideContent title={slide.title} description={slide.description} image={slide.image} />
+            <SlideContent title={slide.title} secondTitle={slide.secondTitle} description={slide.description} image={slide.image} />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -77,7 +77,7 @@ export default function DashboardSidebar() {
       </button>
 
       {/* Logo */}
-      <div className="flex h-16 items-center justify-center border-b border-gray-200 px-4 dark:border-gray-700">
+      <div className="flex h-16 items-center justify-center border-b border-gray-200 px-4 dark:text-white">
         {isCollapsed ? (
           <span className="text-xl font-bold">TAS</span>
         ) : (

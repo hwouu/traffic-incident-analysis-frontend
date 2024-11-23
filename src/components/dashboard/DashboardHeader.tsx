@@ -14,8 +14,8 @@ export default function DashboardHeader() {
           <button className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
             <Menu className="h-6 w-6 text-gray-600 dark:text-gray-300" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-white">
-            교통사고 분석 시스템
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+            사고 탐정
           </h1>
         </div>
 
