@@ -85,21 +85,20 @@ export default function LoginForm() {
     if (errors.id || errors.password) {
       return;
     }
+      const { success, message }  = await authenticateUser(formData);
 
-    /*if (authenticateUser(formData)) {
-      Cookies.set('auth', 'true', { expires: 7 });
-      router.push('/dashboard');
-    } else {
-      setError('아이디 또는 비밀번호가 올바르지 않습니다.');
-    }*/
-   // 로그인 시도
-   const success = await authenticateUser(formData);
-   if (success) {
-     router.push('/dashboard');
-   } else {
-     setError('아이디 또는 비밀번호가 올바르지 않습니다.');
-   }
-  };
+      if (success) {
+        router.push('/dashboard');
+      }
+      else {
+        if (message=='Cannot read properties of null (reading \'password\')'){
+          setError('아이디 또는 비밀번호가 올바르지 않습니다.');
+        }
+        else {
+          setError(message || '로그인에 실패했습니다. 다시 시도해주세요.');
+        }
+    };
+  }
 
   return (
     <div className="space-y-8">
@@ -192,20 +191,6 @@ export default function LoginForm() {
           </Link>
         </p>
       </div>
-
-      {/* Development Only: Auth Cookie Removal */}
-      {process.env.NODE_ENV === 'development' && (
-        <button
-          type="button"
-          onClick={() => {
-            Cookies.remove('auth');
-            router.refresh();
-          }}
-          className="mt-4 w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-        >
-          Remove Auth Cookie (Dev Only)
-        </button>
-      )}
     </div>
   );
 }

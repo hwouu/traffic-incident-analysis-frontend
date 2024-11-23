@@ -10,6 +10,7 @@ export default function RegisterPage() {
     password: '',
     email: ''
   });
+
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,13 +25,14 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
 
-    // 회원가입 시도
-    const success = await registerUser(formData);
-    if (success) {
-      router.push('/login'); // 회원가입 성공 시 로그인 페이지로 이동
-    } else {
-      setError('이미 존재하는 아이디입니다.');
-    }
+     // 회원가입 시도
+     const { success, message } = await registerUser(formData);
+
+     if (success) {
+       router.push('/login'); // 회원가입 성공 시 로그인 페이지로 이동
+     } else {
+       setError(message || '회원가입에 실패했습니다. 다시 시도해주세요.');
+     }
   };
 
   return (
