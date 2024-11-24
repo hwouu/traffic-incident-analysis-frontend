@@ -7,6 +7,10 @@ export function middleware(request: NextRequest) {
   console.log('Current pathname:', pathname);
   console.log('Current origin:', origin);
 
+  // 모든 쿠키 로깅
+  const cookies = request.cookies.getAll();
+  console.log('All cookies:', cookies);
+
   // 인증 상태 확인 (여러 쿠키 확인)
   const isAuthenticated = request.cookies.has('auth') || 
                          request.cookies.has('authToken') || 
@@ -18,8 +22,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/dashboard')) {
     if (!isAuthenticated) {
       console.log('Unauthorized access attempt to dashboard, redirecting to login');
-      const loginUrl = new URL('/login', origin);
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL('/login', origin));
     }
   }
 
@@ -27,8 +30,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (isAuthenticated) {
       console.log('Authenticated user attempting to access login/register, redirecting to dashboard');
-      const dashboardUrl = new URL('/dashboard', origin);
-      return NextResponse.redirect(dashboardUrl);
+      return NextResponse.redirect(new URL('/dashboard', origin));
     }
   }
 
@@ -43,20 +45,14 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
-// 미들웨어가 적용될 경로 설정
+// 미들웨어 matcher 설정 수정
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    // 대시보드 관련 모든 경로
+    '/dashboard',
     '/dashboard/:path*',
+    // 인증 관련 경로
     '/login',
     '/register'
-  ],
+  ]
 };
