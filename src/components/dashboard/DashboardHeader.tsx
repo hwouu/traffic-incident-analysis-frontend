@@ -24,12 +24,12 @@ export default function DashboardHeader() {
 
          {/* 모바일: 중앙 정렬된 로고 */}
          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden">
-           <Logo variant="with-text" size="md" className="text-gray-900 dark:text-white" />
+           <Logo variant="with-text" size="xl" className="text-gray-900 dark:text-white" />
          </div>
 
          {/* 데스크탑: 왼쪽 정렬된 로고 */}
          <div className="hidden md:block">
-           <Logo variant="with-text" size="md" className="text-gray-900 dark:text-white" />
+           <Logo variant="with-text" size="xl" className="text-gray-900 dark:text-white" />
          </div>
 
          {/* 모바일: 우측 아이콘들 */}

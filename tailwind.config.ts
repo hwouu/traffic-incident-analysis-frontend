@@ -38,7 +38,7 @@ const config: Config = {
       },
       animation: {
         fadeIn: 'fadeIn 0.7s ease-out forwards',
-      },
+      }
     },
   },
   plugins: [],
