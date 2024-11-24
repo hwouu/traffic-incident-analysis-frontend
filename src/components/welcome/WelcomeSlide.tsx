@@ -2,11 +2,11 @@
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, A11y, EffectFade, Autoplay } from 'swiper/modules';
-import Link from 'next/link';
 import Logo from '@/components/common/Logo';
 import SlideContent from './SlideContent';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
+import ThemeToggle from '../common/ThemeToggle';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -47,9 +47,10 @@ export function WelcomeSlide() {
 
   return (
     <div className="relative h-full w-full">
-      {/* Logo 추가 - 크기를 xl로 변경 */}
-      <div className="absolute left-6 top-6 z-50">
-        <Logo variant="with-text" size="xl" />
+      {/* 상단 헤더 영역 통합 */}
+      <div className="absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6">
+        <Logo variant="with-text" size="lg" />
+        <ThemeToggle />
       </div>
 
       <Swiper
@@ -74,6 +75,7 @@ export function WelcomeSlide() {
             className="bg-background transition-colors dark:bg-dark-background"
           >
             <SlideContent title={slide.title} secondTitle={slide.secondTitle} description={slide.description} image={slide.image} />
+
           </SwiperSlide>
         ))}
       </Swiper>

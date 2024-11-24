@@ -24,14 +24,14 @@ export default function MediaUpload({ onClose }: MediaUploadProps) {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const droppedFiles = Array.from(e.dataTransfer.files);
-    setFiles(prevFiles => [...prevFiles, ...droppedFiles]);
+    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl dark:bg-gray-800 md:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">미디어 업로드</h2>
           <button
@@ -47,7 +47,7 @@ export default function MediaUpload({ onClose }: MediaUploadProps) {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`flex h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
+          className={`flex h-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors md:h-48 ${
             isDragging
               ? 'border-primary bg-primary/5'
               : 'border-gray-300 hover:border-primary dark:border-gray-600'
@@ -63,7 +63,7 @@ export default function MediaUpload({ onClose }: MediaUploadProps) {
             className="absolute inset-0 cursor-pointer opacity-0"
             onChange={(e) => {
               if (e.target.files) {
-                setFiles(prevFiles => [...prevFiles, ...Array.from(e.target.files!)]);
+                setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files!)]);
               }
             }}
           />
@@ -90,10 +90,10 @@ export default function MediaUpload({ onClose }: MediaUploadProps) {
         )}
 
         {/* 액션 버튼 */}
-        <div className="mt-6 flex justify-end space-x-2">
+        <div className="mt-6 flex flex-col-reverse justify-end space-y-2 space-y-reverse md:flex-row md:space-x-2 md:space-y-0">
           <button
             onClick={onClose}
-            className="rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+            className="w-full rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 md:w-auto"
           >
             취소
           </button>
@@ -102,7 +102,7 @@ export default function MediaUpload({ onClose }: MediaUploadProps) {
               // TODO: 파일 업로드 처리
               onClose();
             }}
-            className="rounded-lg bg-primary px-4 py-2 text-sm text-white hover:bg-primary-dark"
+            className="w-full rounded-lg bg-primary px-4 py-2 text-sm text-white hover:bg-primary-dark md:w-auto"
           >
             업로드
           </button>

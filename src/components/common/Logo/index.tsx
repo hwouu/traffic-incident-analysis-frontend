@@ -17,7 +17,7 @@ const SIZES = {
   xl: { width: 112, height: 112 },  // 더 큰 크기 추가
 };
 
-export default function Logo({ variant = 'main', size = 'md', className = '' }: LogoProps) {
+export default function Logo({ variant = 'with-text', size = 'md', className = '' }: LogoProps) {
   const { width, height } = SIZES[size];
   const logoDark = `/images/logo-dark-${variant}.svg`;
   const logoLight = `/images/logo-light-${variant}.svg`;
@@ -83,9 +83,6 @@ export function GreenBGLogo({ variant = 'main', size = 'md', className = '' }: L
       )}
         
       </div>
-      {variant === 'main' && (
-        <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">사고 탐정</span>
-      )}
     </Link>
   );
 }

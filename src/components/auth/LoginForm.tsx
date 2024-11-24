@@ -69,36 +69,42 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
+  
     // 모든 필드를 touched로 설정
     setTouched({ id: true, password: true });
-
+  
     // 유효성 검사
     const errors = {
       id: validateField('id', formData.id),
       password: validateField('password', formData.password)
     };
-
+  
     setFormErrors(errors);
-
+  
     // 에러가 있으면 제출하지 않음
     if (errors.id || errors.password) {
       return;
     }
-      const { success, message }  = await authenticateUser(formData);
-
+  
+    try {
+      const { success, message } = await authenticateUser(formData);
+  
       if (success) {
         router.push('/dashboard');
-      }
-      else {
-        if (message=='Cannot read properties of null (reading \'password\')'){
+      } else {
+        if (message?.includes('Cannot read properties of null')) {
           setError('아이디 또는 비밀번호가 올바르지 않습니다.');
-        }
-        else {
+        } else if (message?.includes('서버에 연결할 수 없습니다')) {
+          setError('서버와의 연결이 원활하지 않습니다. 잠시 후 다시 시도해주세요.');
+        } else {
           setError(message || '로그인에 실패했습니다. 다시 시도해주세요.');
         }
-    };
-  }
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('로그인 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
+  };
 
   return (
     <div className="space-y-8">
