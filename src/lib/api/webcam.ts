@@ -1,7 +1,7 @@
 import { getAuthToken } from '@/lib/utils/auth';
 import type { UploadResponse } from '@/types/webcam';
 
-const API_BASE_URL = 'http://52.79.53.159:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop';
 
 export const uploadWebcamRecording = async (
   videoBlob: Blob,

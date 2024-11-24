@@ -13,9 +13,7 @@ interface AuthResponse {
 }
 
 // 개발 환경과 프로덕션 환경에 따른 API URL 설정
-const API_BASE_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://52.79.53.159:3000'  // 개발 환경
-  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://52.79.53.159.nip.io:3000'); // 프로덕션 환경
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop';
 
 export const registerUser = async (credentials: Credentials): Promise<{success: boolean; message?: string}> => {
   try {
