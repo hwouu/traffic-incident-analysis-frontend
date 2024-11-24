@@ -53,8 +53,6 @@ export const registerUser = async (credentials: Credentials): Promise<{success: 
 
 export const authenticateUser = async (credentials: Credentials): Promise<{success: boolean; message?: string}> => {
   try {
-    console.log('Attempting to authenticate with URL:', `${API_BASE_URL}/api/users/login`);
-    
     const response = await fetch(`${API_BASE_URL}/api/users/login`, {
       method: 'POST',
       headers: {
@@ -69,21 +67,24 @@ export const authenticateUser = async (credentials: Credentials): Promise<{succe
     });
 
     const data = await response.json();
-    console.log('Authentication response:', data);
 
     if (!response.ok) {
       throw new Error(data.message || '로그인에 실패했습니다.');
     }
 
     if (data.accessToken) {
+      // 토큰을 여러 방식으로 저장
       setAuthToken(data.accessToken);
-      // 사용자 정보도 localStorage에 저장
+      document.cookie = `auth=${data.accessToken}; path=/; secure; samesite=strict`;
+      document.cookie = `authToken=${data.accessToken}; path=/; secure; samesite=strict`;
+      
       localStorage.setItem('userInfo', JSON.stringify({
-        id: 1,
+        id: data.userId || 1,
         email: credentials.email || '',
-        nickname: credentials.id,  // username을 nickname으로 사용
-        userType: 'user'
+        nickname: credentials.id,
+        userType: data.userType || 'user'
       }));
+      
       return { success: true };
     }
 
@@ -91,15 +92,8 @@ export const authenticateUser = async (credentials: Credentials): Promise<{succe
       success: false, 
       message: '인증 토큰을 받지 못했습니다.' 
     };
-
   } catch (error) {
     console.error('Authentication error:', error);
-    if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      return {
-        success: false,
-        message: '서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.'
-      };
-    }
     return { 
       success: false, 
       message: error instanceof Error ? error.message : '서버와의 통신 중 오류가 발생했습니다.' 
