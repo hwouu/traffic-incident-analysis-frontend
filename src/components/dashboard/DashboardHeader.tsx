@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ThemeToggle from '../common/ThemeToggle';
 import { Bell, Menu } from 'lucide-react';
 import Logo from '../common/Logo';
@@ -9,6 +9,16 @@ import { useDashboard } from '@/context/DashboardContext';
 export default function DashboardHeader() {
  const [notifications] = useState<Array<any>>([]);
  const { isMobileOpen, setIsMobileOpen } = useDashboard();
+ const [mounted, setMounted] = useState(false);
+
+  // useEffect only runs on the client, so now we can safely show the UI
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
  return (
    <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-800">
