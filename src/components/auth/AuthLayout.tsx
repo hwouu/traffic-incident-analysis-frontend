@@ -119,7 +119,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
             {/* Mobile Logo */}
             <div className="mb-8 flex justify-center lg:hidden">
-              <GreenBGLogo variant="with-text" size="md" />
+              <GreenBGLogo variant="with-text" size="xl" />
             </div>
             {children}
           </div>
