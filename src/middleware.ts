@@ -2,56 +2,46 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // 현재 URL과 환경 확인
   const { pathname, origin } = request.nextUrl;
-  console.log('Current pathname:', pathname);
-  console.log('Current origin:', origin);
+  console.log('Middleware executing for path:', pathname);
 
-  // 모든 쿠키 로깅
-  const cookies = request.cookies.getAll();
-  console.log('All cookies:', cookies);
+  // 모든 쿠키 상태 로깅
+  const allCookies = request.cookies.getAll();
+  console.log('Available cookies:', allCookies);
 
-  // 인증 상태 확인 (여러 쿠키 확인)
-  const isAuthenticated = request.cookies.has('auth') || 
-                         request.cookies.has('authToken') || 
-                         request.cookies.has('token');
-  
-  console.log('Authentication status:', isAuthenticated);
+  // 인증 상태 확인 - auth 쿠키만 체크하도록 변경
+  const authToken = request.cookies.get('auth');
+  const isAuthenticated = !!authToken;
 
-  // 보호된 라우트에 대한 접근 제어
-  if (pathname.startsWith('/dashboard')) {
+  console.log('Auth token present:', !!authToken);
+  console.log('Is authenticated:', isAuthenticated);
+
+  // 대시보드 접근 제어
+  if (pathname.includes('/dashboard')) {
     if (!isAuthenticated) {
-      console.log('Unauthorized access attempt to dashboard, redirecting to login');
-      return NextResponse.redirect(new URL('/login', origin));
+      console.log('Blocking unauthorized dashboard access');
+      const loginUrl = new URL('/login', origin);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
-  // 로그인한 사용자의 로그인/회원가입 페이지 접근 제어
+  // 인증된 사용자의 로그인/회원가입 페이지 접근 제어
   if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (isAuthenticated) {
-      console.log('Authenticated user attempting to access login/register, redirecting to dashboard');
-      return NextResponse.redirect(new URL('/dashboard', origin));
+      console.log('Redirecting authenticated user from auth pages');
+      const dashboardUrl = new URL('/dashboard', origin);
+      return NextResponse.redirect(dashboardUrl);
     }
   }
 
-  // 응답 헤더 설정
-  const response = NextResponse.next();
-  
-  // 보안 헤더 추가
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-  return response;
+  return NextResponse.next();
 }
 
-// 미들웨어 matcher 설정 수정
 export const config = {
   matcher: [
-    // 대시보드 관련 모든 경로
+    // 명확한 경로 매칭
     '/dashboard',
     '/dashboard/:path*',
-    // 인증 관련 경로
     '/login',
     '/register'
   ]
