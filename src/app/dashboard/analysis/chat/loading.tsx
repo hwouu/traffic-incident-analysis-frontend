@@ -8,10 +8,11 @@ const HexagonLoadingAnimation = () => {
   const [showSecondTitle, setShowSecondTitle] = useState(false);
   const { theme } = useTheme(); 
 
-  // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
     setMounted(true);
   }, []);
+
+
   
   const calculateHexagonPoints = (
     centerX: number,
@@ -27,14 +28,14 @@ const HexagonLoadingAnimation = () => {
   };
   
   const centerX = 250;
-  const centerY = 200; // y 좌표를 위로 조정
+  const centerY = 200;
   const nodePositions = [
     { x: centerX, y: centerY },
     ...calculateHexagonPoints(centerX, centerY, 60, 6),
     ...calculateHexagonPoints(centerX, centerY, 120, 6),
   ];
 
-  const connections = [];
+  const connections: { start: number; end: number }[] = [];
   for (let i = 1; i <= 6; i++) {
     connections.push({ start: 0, end: i });
   }
@@ -43,16 +44,49 @@ const HexagonLoadingAnimation = () => {
     connections.push({ start: i, end: ((i % 6) + 1) + 6 });
   }
 
+  // 주어진 노드와 연결된 모든 노드의 인덱스를 반환하는 함수
+  const getConnectedNodes = (nodeIndex: number) => {
+    const connected = new Set<number>();
+    connections.forEach(conn => {
+      if (conn.start === nodeIndex) {
+        connected.add(conn.end);
+      }
+      if (conn.end === nodeIndex) {
+        connected.add(conn.start);
+      }
+    });
+    return Array.from(connected);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
-      const newActiveNodes = new Set();
-      const numActive = Math.floor(Math.random() * 2) + 2;
+      const newActiveNodes = new Set<number>();
       
-      if (Math.random() > 0.7) {
+      // 중앙 노드를 80% 확률로 활성화
+      if (Math.random() > 0.5) {
         newActiveNodes.add(0);
       }
       
+      // 4-6개의 노드를 활성화
+      const numActive = Math.floor(Math.random() * 3) + 4;
+      
+      // 이미 활성화된 노드와 연결된 노드들 중에서 우선적으로 선택
       while (newActiveNodes.size < numActive) {
+        const activeNodesArray = Array.from(newActiveNodes);
+        if (activeNodesArray.length > 0 && Math.random() > 0.5) {
+          // 현재 활성화된 노드 중 하나를 무작위로 선택
+          const randomActiveNode = activeNodesArray[Math.floor(Math.random() * activeNodesArray.length)];
+          // 선택된 노드와 연결된 노드들을 가져옴
+          const connectedNodes = getConnectedNodes(randomActiveNode);
+          // 연결된 노드 중 하나를 무작위로 선택하여 활성화
+          if (connectedNodes.length > 0) {
+            const randomConnected = connectedNodes[Math.floor(Math.random() * connectedNodes.length)];
+            newActiveNodes.add(randomConnected);
+            continue;
+          }
+        }
+        
+        // 연결된 노드를 선택하지 않았을 경우, 무작위 노드 선택
         const randomIndex = Math.floor(Math.random() * nodePositions.length);
         newActiveNodes.add(randomIndex);
       }
@@ -63,11 +97,14 @@ const HexagonLoadingAnimation = () => {
     return () => clearInterval(interval);
   }, []);
 
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center p-6 rounded-lg">
-      <div className="relative w-[500px] h-[350px]"> {/* 높이 줄임 */}
-        <svg className="w-full h-full" viewBox="0 0 500 350"> {/* viewBox 높이 조정 */}
-          {/* 연결선 */}
+      <div className="relative w-[500px] h-[350px]">
+        <svg className="w-full h-full" viewBox="0 0 500 380">
           {connections.map((conn, index) => {
             const start = nodePositions[conn.start];
             const end = nodePositions[conn.end];
@@ -80,23 +117,22 @@ const HexagonLoadingAnimation = () => {
                 y1={start.y}
                 x2={end.x}
                 y2={end.y}
-                stroke={isActive ? theme === 'dark' ?"#FBFFEA" : "#60A5FA" : theme === 'dark' ?'#FDFFF4':"#E2E8F0"}
-                strokeWidth={isActive ? "2" : "1"}
+                stroke={isActive ? theme === 'dark' ? "#FBFFEA" : "#60A5FA" : theme === 'dark' ? '#FDFFF4' : "#E2E8F0"}
+                strokeWidth={isActive ? "3" : "1"}
                 className={`transition-all duration-1000 ${
-                  isActive ? 'opacity-70' : 'opacity-30'
+                  isActive ? 'opacity-90' : 'opacity-20'
                 }`}
               />
             );
           })}
           
-          {/* 노드 */}
           {nodePositions.map((node, index) => (
             <g key={`node-${index}`}>
               <circle
                 cx={node.x}
                 cy={node.y}
                 r={index === 0 ? "12" : "8"}
-                fill={activeNodes.has(index) ? theme === 'dark' ?'#F6FCDF':"#3B82F6" : theme === 'dark' ?'#D0D8B1':"#94A3B8"}
+                fill={activeNodes.has(index) ? theme === 'dark' ? '#F6FCDF' : "#3B82F6" : theme === 'dark' ? '#D0D8B1' : "#94A3B8"}
                 className={`transition-all duration-1000 ${
                   activeNodes.has(index) ? 'opacity-100' : 'opacity-40'
                 }`}
@@ -108,7 +144,7 @@ const HexagonLoadingAnimation = () => {
                   cy={node.y}
                   r={index === 0 ? "16" : "12"}
                   fill="none"
-                  stroke={theme === 'dark' ?"#FBFFEA" : "60A5FA"}
+                  stroke={theme === 'dark' ? "#FBFFEA" : "#60A5FA"}
                   strokeWidth="2"
                   className="transition-all duration-1000 opacity-40"
                 />
@@ -118,10 +154,9 @@ const HexagonLoadingAnimation = () => {
         </svg>
       </div>
       
-      {/* Loading text - 간격 줄이고 패딩 조정 */}
-      <div className="flex flex-col items-center justify-center mt-2"> {/* flex-column으로 변경 */}
+      <div className="flex flex-col items-center justify-center mt-2 space-y-4">
         <p className="text-lg font-medium text-gray-700 dark:text-white">GPT 분석중...</p>
-        <div className="flex items-center justify-center mt-1">
+        <div className="flex items-center justify-center">
           <p className="text-sm text-gray-500">잠시만 기다려주세요</p>
           <div className="flex gap-1 ml-2">
             <div 
@@ -137,11 +172,9 @@ const HexagonLoadingAnimation = () => {
               style={{ backgroundColor: theme === 'dark' ? '#F6FCDF' : '#3B82F6', animationDelay: '400ms' }}
             ></div>
           </div>
-      </div>
         </div>
-        
-</div>
-
+      </div>
+    </div>
   );
 };
 
