@@ -12,8 +12,9 @@ interface AuthResponse {
   message: string;
 }
 
-// 개발 환경과 프로덕션 환경에 따른 API URL 설정
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop';
+const API_BASE_URL = process.env.NODE_ENV === 'development' 
+  ? 'https://www.hwouu.shop'  // 개발 환경에서도 프로덕션 API 사용
+  : (process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop');
 
 export const registerUser = async (credentials: Credentials): Promise<{success: boolean; message?: string}> => {
   try {
