@@ -99,8 +99,8 @@ export default function DashboardSidebar() {
                 onClick={() => setIsMobileOpen(false)}
                 className={`flex items-center space-x-2 rounded-lg px-3 py-2 transition-colors ${
                   isActive
-                    ? 'bg-primary text-white'
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                    ? 'bg-primary font-bold text-white'
+                    : 'text-gray-700 font-bold hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
                 }`}
               >
                 <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : ''}`} />

@@ -5,6 +5,7 @@ import ThemeToggle from '../common/ThemeToggle';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import { GreenBGLogo } from '@/components/common/Logo';
+import Logo from '@/components/common/Logo';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import 'swiper/css';
@@ -119,7 +120,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
             {/* Mobile Logo */}
             <div className="mb-8 flex justify-center lg:hidden">
-              <GreenBGLogo variant="with-text" size="xl" />
+              <Logo variant="with-text" size="xl" />
             </div>
             {children}
           </div>
