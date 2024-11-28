@@ -32,11 +32,6 @@ export default function DashboardSidebar() {
       path: '/dashboard/analysis/chat',
     },
     {
-      name: '분석',
-      icon: BarChart3,
-      path: '/dashboard/analysis',
-    },
-    {
       name: '보고서',
       icon: FileText,
       path: '/dashboard/reports',

@@ -2,20 +2,35 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // 현재 사용자의 인증 상태 확인
-  const isAuthenticated = request.cookies.has('auth');
+  const { pathname, origin } = request.nextUrl;
+  console.log('Middleware executing for path:', pathname);
 
-  // 보호된 라우트에 대한 접근 제어
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+  // 모든 쿠키 상태 로깅
+  const allCookies = request.cookies.getAll();
+  console.log('Available cookies:', allCookies);
+
+  // 인증 상태 확인 - auth 쿠키만 체크하도록 변경
+  const authToken = request.cookies.get('auth');
+  const isAuthenticated = !!authToken;
+
+  console.log('Auth token present:', !!authToken);
+  console.log('Is authenticated:', isAuthenticated);
+
+  // 대시보드 접근 제어
+  if (pathname.includes('/dashboard')) {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      console.log('Blocking unauthorized dashboard access');
+      const loginUrl = new URL('/login', origin);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
-  // 이미 로그인한 사용자가 로그인/회원가입 페이지 접근 시 대시보드로 리다이렉트
-  if (request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')) {
+  // 인증된 사용자의 로그인/회원가입 페이지 접근 제어
+  if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      console.log('Redirecting authenticated user from auth pages');
+      const dashboardUrl = new URL('/dashboard', origin);
+      return NextResponse.redirect(dashboardUrl);
     }
   }
 
@@ -23,5 +38,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register'],
+  matcher: [
+    // 명확한 경로 매칭
+    '/dashboard',
+    '/dashboard/:path*',
+    '/login',
+    '/register'
+  ]
 };

@@ -5,6 +5,8 @@ import { Camera, StopCircle, Upload, Loader2, RefreshCcw } from 'lucide-react';
 import { getAuthToken, removeAuthToken } from '@/lib/utils/auth';
 import type { WebcamStreamProps, UploadResponse } from '@/types/webcam';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop';
+
 export default function WebcamStream({
   onError,
   onUploadSuccess,
@@ -127,7 +129,6 @@ export default function WebcamStream({
       const fileName = `recording-${Date.now()}.mp4`;
       formData.append('video', recordedBlob, fileName);
 
-      // 업로드 시작 로그
       console.log('Starting upload process...');
       console.log('File details:', {
         name: fileName,
@@ -135,7 +136,7 @@ export default function WebcamStream({
         type: recordedBlob.type,
       });
 
-      const response = await fetch('http://52.79.53.159:3000/api/stream/upload', {
+      const response = await fetch(`${API_BASE_URL}/api/stream/upload`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -143,11 +144,9 @@ export default function WebcamStream({
         body: formData,
       });
 
-      // 서버 응답 로그
       console.log('Server response status:', response.status);
       console.log('Server response status text:', response.statusText);
 
-      // 응답 텍스트 확인
       const responseText = await response.text();
       console.log('Raw server response:', responseText);
 
@@ -161,7 +160,6 @@ export default function WebcamStream({
       }
 
       if (!response.ok) {
-        // 자세한 에러 정보 출력
         console.error('Upload failed with status:', response.status);
         console.error('Error details:', responseData);
 

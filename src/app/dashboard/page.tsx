@@ -1,8 +1,27 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardContent from '@/components/dashboard/DashboardContent';
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuthentication = () => {
+      const cookies = document.cookie.split(';');
+      const hasAuthCookie = cookies.some(cookie => 
+        cookie.trim().startsWith('auth=')
+      );
+
+      if (!hasAuthCookie) {
+        router.replace('/login');
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
+
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6">

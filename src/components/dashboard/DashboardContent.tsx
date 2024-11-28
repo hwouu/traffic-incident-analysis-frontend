@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle, Clock, CheckCircle, MessageSquareText, BarChart3 } from 'lucide-react';
+import { AlertTriangle, Clock, CheckCircle, MessageSquareText, FileText } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth/auth';
 import type { UserProfile } from '@/types/auth';
 import Link from 'next/link';
@@ -41,11 +41,11 @@ export default function DashboardContent() {
             사고 신고 챗봇 시작
           </Link>
           <Link
-            href="/dashboard/analysis"
+            href="/dashboard/reports"
             className="flex items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-sm text-white transition-colors hover:bg-green-600 md:text-base"
           >
-            <BarChart3 className="mr-2 h-5 w-5" />
-            사고 분석 목록 확인
+            <FileText className="mr-2 h-5 w-5" />
+            보고서 목록 확인
           </Link>
         </div>
       </div>

@@ -70,10 +70,57 @@ export default function ChatInterface() {
     ]);
   };
 
+  const handleMediaUploadSuccess = (urls: string[]) => {
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        type: 'bot',
+        content: '파일이 성공적으로 업로드되었습니다.',
+        timestamp: new Date()
+      },
+      {
+        id: (Date.now() + 1).toString(),
+        type: 'bot',
+        content: `업로드된 파일: ${urls.join(', ')}`,
+        timestamp: new Date()
+      }
+    ]);
+    setShowMediaUpload(false);
+  };
+
+  const handleMediaUploadError = (error: string) => {
+    setMessages(prev => [...prev, {
+      id: Date.now().toString(),
+      type: 'bot',
+      content: `파일 업로드 중 오류가 발생했습니다: ${error}`,
+      timestamp: new Date()
+    }]);
+  };
+
+  const handleSendMessage = () => {
+    if (input.trim()) {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        type: 'user',
+        content: input.trim(),
+        timestamp: new Date()
+      }]);
+      setInput('');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
     <div className="flex h-full w-full flex-col">
       {/* 미디어 컨트롤 */}
-      <div className="border-b border-gray-200 p-3 dark:border-gray-700 md:p-4">
+      <div className="border-b border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900 md:p-4">
         <div className="flex flex-wrap gap-2 md:flex-nowrap md:space-x-4">
           <button
             onClick={() => setShowMediaUpload(true)}
@@ -98,7 +145,7 @@ export default function ChatInterface() {
 
       {/* 웹캠 스트림 */}
       {isWebcamActive && (
-        <div className="border-b border-gray-200 p-3 dark:border-gray-700 md:p-4">
+        <div className="border-b border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900 md:p-4">
           <WebcamStream
             onError={handleRecordingError}
             onUploadSuccess={handleUploadSuccess}
@@ -108,7 +155,7 @@ export default function ChatInterface() {
       )}
 
       {/* 채팅 메시지 */}
-      <div className="flex-1 overflow-y-auto p-3 md:p-4">
+      <div className="flex-1 overflow-y-auto bg-gray-50 p-3 dark:bg-gray-800 md:p-4">
         <div className="space-y-4">
           {messages.map((message) => (
             <div
@@ -119,7 +166,7 @@ export default function ChatInterface() {
                 className={`max-w-[75%] rounded-lg px-4 py-2 ${
                   message.type === 'user'
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
+                    : 'bg-white text-gray-900 dark:bg-gray-700 dark:text-white'
                 }`}
               >
                 {message.content}
@@ -130,10 +177,36 @@ export default function ChatInterface() {
         </div>
       </div>
 
+      {/* 메시지 입력 */}
+      <div className="border-t border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900 md:p-4">
+        <div className="flex space-x-2">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="메시지를 입력하세요..."
+            className="flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2 text-gray-900 placeholder-gray-500 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-400"
+            rows={1}
+          />
+          <button
+            onClick={handleSendMessage}
+            disabled={!input.trim()}
+            className="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
       {/* 미디어 업로드 모달 */}
       {showMediaUpload && (
-        <MediaUpload onClose={() => setShowMediaUpload(false)} />
+        <MediaUpload 
+          onClose={() => setShowMediaUpload(false)}
+          onUploadSuccess={handleMediaUploadSuccess}
+          onError={handleMediaUploadError}
+        />
       )}
     </div>
   );
+
 }
