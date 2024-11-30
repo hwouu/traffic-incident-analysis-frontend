@@ -1,44 +1,66 @@
+// src/app/dashboard/reports/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { LayoutGrid, List } from 'lucide-react';
-import { Report } from '@/types/report';
+import { useState, useEffect } from 'react';
+import { LayoutGrid, List, Loader2 } from 'lucide-react';
+import type { Report } from '@/types/report';
+import { reportsApi } from '@/lib/api/reports';
 import ReportList from '@/components/reports/ReportList';
 import ReportGrid from '@/components/reports/ReportGrid';
 import ReportModal from '@/components/reports/ReportModal';
-
-const MOCK_REPORTS: Report[] = [
-  {
-    report_id: 'R0001',
-    case_id: 'A0001',
-    accident_type: '추돌 사고',
-    location: '서울시 강남구 테헤란로 301',
-    date: '2024-11-24',
-    time: '19:24:40',
-    analysis_status: 'completed',
-    accident_name: '테헤란로에서 발생한 이중 추돌 사고',
-    vehicle_1_type: 'sedan',
-    vehicle_1_color: 'red',
-    vehicle_2_type: 'suv',
-    vehicle_2_color: 'white',
-    accident_detail:
-      '베이지색 세단인 차량 #1이 좌회전을 시도하던 교차로에서 교통사고가 발생했습니다. 회전하는 동안 적갈색 세단인 차량 #2가 차량 #1의 전면 좌측을 충돌했습니다.',
-  },
-];
 
 export default function ReportsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredReports = MOCK_REPORTS.filter((report) => {
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const fetchedReports = await reportsApi.getReports();
+        setReports(fetchedReports);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '보고서를 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  const filteredReports = reports.filter((report) => {
     const matchesSearch =
-      report.accident_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === '' || report.accident_type === selectedType;
+      report.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.accident_type.type.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = selectedType === '' || report.accident_type.type === selectedType;
     return matchesSearch && matchesType;
   });
+
+  const uniqueAccidentTypes = Array.from(
+    new Set(reports.map((report) => report.accident_type.type))
+  );
+
+  if (loading) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-[50vh] items-center justify-center">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
@@ -85,12 +107,14 @@ export default function ReportsPage() {
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="rounded-lg border border-gray-300 px-4 py-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="">모든 유형</option>
-            <option value="추돌 사고">추돌 사고</option>
-            <option value="접촉 사고">접촉 사고</option>
-            <option value="전복 사고">전복 사고</option>
+            {uniqueAccidentTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
           </select>
         </div>
       </div>
