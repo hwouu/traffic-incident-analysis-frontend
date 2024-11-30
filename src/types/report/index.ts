@@ -1,22 +1,32 @@
+export interface Vehicle {
+  type: string;
+  color: string;
+  damage: string;
+}
+
+export interface AccidentType {
+  type: string;
+  severity: string;
+}
+
+export interface DamagedSituation {
+  damage: string;
+  injury: string;
+}
+
 export interface Report {
   report_id: string;
-  case_id: string;
-  accident_type: string;
-  location: string;
+  user_id: number;
   date: string;
   time: string;
-  analysis_status: 'analyzing' | 'completed' | 'failed';
-  accident_name?: string;
-  vehicle_1_type?: string;
-  vehicle_1_color?: string;
-  vehicle_2_type?: string;
-  vehicle_2_color?: string;
-  accident_detail?: string;
+  location: string;
+  accident_type: AccidentType;
+  damaged_situation: DamagedSituation;
+  number_of_vehicle: number;
+  vehicle: Vehicle[];
+  description: string | null;
+  fileUrl: string[] | null;
+  fileType: string | null;
+  created_at: string;
+  updated_at: string;
 }
-
-export interface ReportListProps {
-  reports: Report[];
-  onSelectReport: (report: Report) => void;
-}
-
-export type ViewMode = 'list' | 'grid';
