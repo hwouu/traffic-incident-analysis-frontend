@@ -2,6 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { LayoutGrid, List, Loader2 } from 'lucide-react';
 import { Report } from '@/types/report';
 import ReportList from '@/components/reports/ReportList';
@@ -11,6 +13,8 @@ import { reportsApi } from '@/lib/api/reports';
 import { generateReportTitle } from '@/lib/utils/report';
 
 export default function ReportsPage() {
+  const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,11 +24,23 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Auth state:', { user, authLoading }); // 디버깅용 로그
+
+    if (!authLoading && !user) {
+      console.log('Redirecting to login: no user found');
+      router.push('/login');
+      return;
+    }
+
     const fetchReports = async () => {
       try {
         setLoading(true);
         const fetchedReports = await reportsApi.getReports();
-        setReports(fetchedReports);
+
+        // 현재 로그인한 사용자의 보고서만 필터링
+        const userReports = fetchedReports.filter((report) => report.user_id === user?.id);
+
+        setReports(userReports);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : '보고서를 불러오는데 실패했습니다.');
@@ -34,12 +50,15 @@ export default function ReportsPage() {
       }
     };
 
-    fetchReports();
-  }, []);
+    if (user) {
+      fetchReports();
+    }
+  }, [user, authLoading, router]);
 
   const filteredReports = reports.filter((report) => {
     const title = generateReportTitle(report).toLowerCase();
-    const matchesSearch = title.includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      title.includes(searchTerm.toLowerCase()) ||
       report.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === '' || report.accident_type.type === selectedType;
     return matchesSearch && matchesType;
@@ -114,7 +133,9 @@ export default function ReportsPage() {
           >
             <option value="">모든 유형</option>
             {uniqueAccidentTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
