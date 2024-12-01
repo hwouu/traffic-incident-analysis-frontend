@@ -10,7 +10,7 @@ const nextConfig = {
       protocol: 'https',
       hostname: 'traffic-incident-s3-bucket.s3.ap-northeast-2.amazonaws.com',
       port: '',
-      pathname: '/recordings/frames/**'
+      pathname: '/**'
     }]
   }
 };
