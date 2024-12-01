@@ -65,7 +65,7 @@ export default function DashboardSidebar() {
       )}
 
       <aside
-        className={`fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-[280px] transform border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 md:relative md:top-0 md:h-screen ${
+        className={`fixed left-0 top-0 z-40 h-screen w-[280px] transform border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 md:sticky ${
           isCollapsed ? 'md:w-20' : 'md:w-64'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
@@ -100,7 +100,7 @@ export default function DashboardSidebar() {
                 className={`flex items-center space-x-2 rounded-lg px-3 py-2 transition-colors ${
                   isActive
                     ? 'bg-primary font-bold text-white'
-                    : 'text-gray-700 font-bold hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                    : 'font-bold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
                 }`}
               >
                 <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : ''}`} />
