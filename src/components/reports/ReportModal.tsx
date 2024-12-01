@@ -24,6 +24,7 @@ interface ReportModalProps {
 export default function ReportModal({ report, onClose }: ReportModalProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageExpanded, setIsImageExpanded] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => 
@@ -34,6 +35,103 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
   const handleNextImage = () => {
     setCurrentImageIndex((prev) => 
       prev === (report.fileUrl?.length || 1) - 1 ? 0 : prev + 1
+    );
+  };
+
+  const MediaSection = () => {
+    if (!report.fileUrl || report.fileUrl.length === 0) return null;
+
+    if (report.fileType === 'video') {
+      return (
+        <div className="rounded-lg bg-gray-100 p-6 dark:bg-gray-900">
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+            <video
+              src={report.fileUrl[0]}
+              controls
+              className="h-full w-full"
+              onPlay={() => setIsVideoPlaying(true)}
+              onPause={() => setIsVideoPlaying(false)}
+            >
+              <source src={report.fileUrl[0]} type="video/mp4" />
+              브라우저가 비디오 재생을 지원하지 않습니다.
+            </video>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-lg bg-gray-100 p-6 dark:bg-gray-900">
+        <div className="relative">
+          <div className="relative aspect-video h-[400px] w-full overflow-hidden rounded-lg">
+            <Image
+              src={report.fileUrl[currentImageIndex]}
+              alt={`사고 현장 이미지 ${currentImageIndex + 1}`}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 1200px"
+              priority
+            />
+          </div>
+          
+          <button
+            onClick={() => setIsImageExpanded(true)}
+            className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+          >
+            <Maximize2 className="h-5 w-5" />
+          </button>
+
+          {report.fileUrl.length > 1 && (
+            <div className="absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 justify-between px-4">
+              <button
+                onClick={handlePrevImage}
+                className="rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {report.fileUrl.length > 1 && (
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-white">
+                사고 현장 이미지 ({currentImageIndex + 1} / {report.fileUrl.length})
+              </h4>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {report.fileUrl.map((url, index) => (
+                <button
+                  key={url}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`relative flex-shrink-0 ${
+                    currentImageIndex === index 
+                      ? 'ring-2 ring-primary ring-offset-2' 
+                      : 'opacity-70'
+                  }`}
+                >
+                  <div className="relative h-20 w-32">
+                    <Image
+                      src={url}
+                      alt={`썸네일 ${index + 1}`}
+                      fill
+                      className="rounded-lg object-cover"
+                      sizes="128px"
+                    />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -148,82 +246,11 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
           </div>
         </div>
 
-        {/* 이미지 갤러리 섹션 */}
-        {report.fileUrl && report.fileUrl.length > 0 && (
-          <div className="rounded-lg bg-gray-100 p-6 dark:bg-gray-900">
-            <div className="relative">
-              <div className="relative aspect-video h-[400px] w-full overflow-hidden rounded-lg">
-                <Image
-                  src={report.fileUrl[currentImageIndex]}
-                  alt={`사고 현장 이미지 ${currentImageIndex + 1}`}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 768px) 100vw, 1200px"
-                  priority
-                />
-              </div>
-              
-              {/* 확대/축소 버튼 */}
-              <button
-                onClick={() => setIsImageExpanded(true)}
-                className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
-              >
-                <Maximize2 className="h-5 w-5" />
-              </button>
-
-              {/* 이미지 네비게이션 */}
-              <div className="absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 justify-between px-4">
-                <button
-                  onClick={handlePrevImage}
-                  className="rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  onClick={handleNextImage}
-                  className="rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </div>
-            </div>
-
-            {/* 썸네일 갤러리 */}
-            <div className="mt-4">
-              <div className="mb-2 flex items-center justify-between">
-                <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                  사고 현장 이미지 ({currentImageIndex + 1} / {report.fileUrl.length})
-                </h4>
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {report.fileUrl.map((url, index) => (
-                  <button
-                    key={url}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`relative flex-shrink-0 ${
-                      currentImageIndex === index 
-                        ? 'ring-2 ring-primary ring-offset-2' 
-                        : 'opacity-70'
-                    }`}
-                  >
-                    <div className="relative h-20 w-32">
-                      <Image
-                        src={url}
-                        alt={`썸네일 ${index + 1}`}
-                        fill
-                        className="rounded-lg object-cover"
-                        sizes="128px"
-                      />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 미디어 섹션 */}
+        <MediaSection />
 
         {/* 이미지 확대 모달 */}
-        {isImageExpanded && report.fileUrl && (
+        {isImageExpanded && report.fileType === 'image' && report.fileUrl && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-90">
             <button
               onClick={() => setIsImageExpanded(false)}
