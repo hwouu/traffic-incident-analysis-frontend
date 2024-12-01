@@ -1,10 +1,15 @@
 // src/components/reports/ReportList.tsx
-import { Report, ReportListProps } from '@/types/report';
+import { Report } from '@/types/report';
 import { format } from 'date-fns';
-import { Car } from 'lucide-react';
+import { Car, MapPin } from 'lucide-react';
 import { generateReportTitle, getStatusBadge } from '@/lib/utils/report';
 
-export default function ReportList({ reports, onSelectReport }: ReportListProps) {
+interface ReportGridProps {
+  reports: Report[];
+  onSelectReport: (report: Report) => void;
+}
+
+export default function ReportGrid({ reports, onSelectReport }: ReportGridProps) {
   return (
     <div className="rounded-lg bg-white shadow-sm dark:bg-gray-800">
       <div className="overflow-x-auto">
@@ -18,10 +23,13 @@ export default function ReportList({ reports, onSelectReport }: ReportListProps)
                 제목
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                발생일
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 차량
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                발생일
+                발생 위치
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 심각도
@@ -42,9 +50,9 @@ export default function ReportList({ reports, onSelectReport }: ReportListProps)
                   <div className="text-sm font-medium text-gray-900 dark:text-white">
                     {generateReportTitle(report)}
                   </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {report.location}
-                  </div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900 dark:text-white">
+                  {format(new Date(report.date), 'yyyy.MM.dd')}
                 </td>
                 <td className="whitespace-nowrap px-6 py-4">
                   <div className="flex items-center gap-1 text-sm text-gray-900 dark:text-white">
@@ -52,8 +60,11 @@ export default function ReportList({ reports, onSelectReport }: ReportListProps)
                     <span>{report.number_of_vehicle}대</span>
                   </div>
                 </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900 dark:text-white">
-                  {format(new Date(report.date), 'yyyy년 MM월 dd일')}
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="flex items-center gap-1 text-sm text-gray-900 dark:text-white">
+                    <MapPin className="h-4 w-4" />
+                    <span>{report.location}</span>
+                  </div>
                 </td>
                 <td className="whitespace-nowrap px-6 py-4 text-sm">
                   <span className={getStatusBadge(report.accident_type.severity)}>

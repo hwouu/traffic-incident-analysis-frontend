@@ -17,7 +17,7 @@ export const generateReportTitle = (report: Report): string => {
     ? '심각한 ' 
     : '';
 
-  return `${location}에서 발생한 ${severityPrefix}${vehicleCount}${accidentType}`;
+  return `${location}에서 발생한 ${severityPrefix}${vehicleCount}${accidentType}사고`;
 };
 
 export const getStatusBadge = (severity: string) => {
