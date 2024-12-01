@@ -1,20 +1,24 @@
 // src/components/reports/ReportModal.tsx
 import { Report } from '@/types/report';
 import { format } from 'date-fns';
-import { 
-  X, 
-  MapPin, 
-  Calendar, 
-  Clock, 
-  Car, 
-  AlertCircle, 
+import {
+  X,
+  MapPin,
+  Calendar,
+  Clock,
+  Car,
+  AlertCircle,
   FileText,
-  ChevronLeft, 
+  ChevronLeft,
   ChevronRight,
-  Maximize2
+  Maximize2,
+  Users,
+  Siren,
+  Bot,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { generateReportTitle } from '@/lib/utils/report';
 
 interface ReportModalProps {
   report: Report;
@@ -27,15 +31,11 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const handlePrevImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? (report.fileUrl?.length || 1) - 1 : prev - 1
-    );
+    setCurrentImageIndex((prev) => (prev === 0 ? (report.fileUrl?.length || 1) - 1 : prev - 1));
   };
 
   const handleNextImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === (report.fileUrl?.length || 1) - 1 ? 0 : prev + 1
-    );
+    setCurrentImageIndex((prev) => (prev === (report.fileUrl?.length || 1) - 1 ? 0 : prev + 1));
   };
 
   const MediaSection = () => {
@@ -73,7 +73,7 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
               priority
             />
           </div>
-          
+
           <button
             onClick={() => setIsImageExpanded(true)}
             className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
@@ -112,9 +112,7 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
                   key={url}
                   onClick={() => setCurrentImageIndex(index)}
                   className={`relative flex-shrink-0 ${
-                    currentImageIndex === index 
-                      ? 'ring-2 ring-primary ring-offset-2' 
-                      : 'opacity-70'
+                    currentImageIndex === index ? 'ring-2 ring-primary ring-offset-2' : 'opacity-70'
                   }`}
                 >
                   <div className="relative h-20 w-32">
@@ -148,103 +146,147 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
         {/* 헤더 섹션 */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            사고 분석 보고서
+            {generateReportTitle(report)}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            보고서 ID: {report.report_id} | 생성일: {format(new Date(report.created_at), 'yyyy년 MM월 dd일 HH:mm')}
+            보고서 ID: {report.report_id} | 생성일:{' '}
+            {format(new Date(report.created_at), 'yyyy년 MM월 dd일 HH:mm')}
           </p>
         </div>
 
         {/* 정보 섹션 */}
-        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* 기본 정보 카드 */}
-          <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
-            <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
-              <AlertCircle className="mr-2 h-5 w-5 text-primary" />
-              사고 정보
-            </h3>
-            <div className="grid gap-4">
-              <div className="flex items-center">
-                <MapPin className="mr-3 h-5 w-5 text-gray-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">위치</p>
-                  <p className="text-gray-900 dark:text-white">{report.location}</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Calendar className="mr-3 h-5 w-5 text-gray-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">발생일</p>
-                  <p className="text-gray-900 dark:text-white">
-                    {format(new Date(report.date), 'yyyy년 MM월 dd일')}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Clock className="mr-3 h-5 w-5 text-gray-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">발생 시각</p>
-                  <p className="text-gray-900 dark:text-white">
-                    {format(new Date(report.time), 'HH:mm')}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 사고 분석 카드 */}
-          <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
-            <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
-              <FileText className="mr-2 h-5 w-5 text-primary" />
-              사고 분석
-            </h3>
-            <div className="grid gap-4">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">사고 유형</p>
-                <p className="mt-1 text-gray-900 dark:text-white">
-                  {report.accident_type.type} (심각도: {report.accident_type.severity})
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">피해 상황</p>
-                <p className="mt-1 text-gray-900 dark:text-white">
-                  {report.damaged_situation.damage} | 부상: {report.damaged_situation.injury}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 차량 정보 카드 */}
-          <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
-            <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
-              <Car className="mr-2 h-5 w-5 text-primary" />
-              관련 차량 정보
-            </h3>
-            <div className="grid gap-4">
-              {report.vehicle.map((vehicle, index) => (
-                <div key={index} className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    차량 {index + 1}
-                  </p>
-                  <div className="mt-2 grid gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">유형: </span>
-                      <span className="font-medium text-gray-900 dark:text-white">{vehicle.type}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">색상: </span>
-                      <span className="font-medium text-gray-900 dark:text-white">{vehicle.color}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">피해: </span>
-                      <span className="font-medium text-gray-900 dark:text-white">{vehicle.damage}</span>
-                    </div>
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="space-y-6">
+            {/* 기본 정보 카드 */}
+            <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
+              <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                <AlertCircle className="mr-2 h-5 w-5 text-primary" />
+                사고 정보
+              </h3>
+              <div className="grid gap-4">
+                <div className="flex items-center">
+                  <MapPin className="mr-3 h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">위치</p>
+                    <p className="text-gray-900 dark:text-white">{report.location}</p>
                   </div>
                 </div>
-              ))}
+                <div className="flex items-center">
+                  <Calendar className="mr-3 h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">발생일</p>
+                    <p className="text-gray-900 dark:text-white">
+                      {format(new Date(report.date), 'yyyy년 MM월 dd일')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Clock className="mr-3 h-5 w-5 text-gray-500" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      발생 시각
+                    </p>
+                    <p className="text-gray-900 dark:text-white">
+                      {format(new Date(report.time), 'HH:mm')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 사고 분석 카드 */}
+            <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
+              <h3 className="mb-4 flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                <Siren className="mr-2 h-5 w-5 text-primary" />
+                사고 분석
+              </h3>
+              <div className="grid gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">사고 유형</p>
+                  <p className="mt-1 text-gray-900 dark:text-white">
+                    {report.accident_type.type} (심각도: {report.accident_type.severity})
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">차량 피해</p>
+                  <p className="mt-1 text-gray-900 dark:text-white">
+                    {report.damaged_situation.damage}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">인명 피해</p>
+                  <p className="mt-1 text-gray-900 dark:text-white">
+                    {report.damaged_situation.injury}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* 차량 정보 카드 */}
+          <div className="rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                <Car className="mr-2 h-5 w-5 text-primary" />
+                관련 차량 정보
+              </h3>
+              <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                <Users className="h-4 w-4" />총 {report.number_of_vehicle}대
+              </span>
+            </div>
+            {/* 스크롤 가능한 컨테이너 추가 */}
+            <div className="max-h-[400px] overflow-y-auto pr-2">
+              <div className="grid gap-4">
+                {report.vehicle.map((vehicle, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                  >
+                    <p className="font-medium text-gray-900 dark:text-white">차량 {index + 1}</p>
+                    <div className="mt-2 grid gap-2 text-sm">
+                      <div>
+                        <span className="text-gray-600 dark:text-gray-400">유형: </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {vehicle.type}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 dark:text-gray-400">색상: </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {vehicle.color}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600 dark:text-gray-400">피해: </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {vehicle.damage}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* GPT 분석 결과 */}
+        {report.description && (
+          <div className="mb-8 rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="flex items-center text-lg font-semibold text-gray-900 dark:text-white">
+                <FileText className="mr-2 h-5 w-5 text-primary" />
+                사고 분석 결과
+              </h3>
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Bot className="h-4 w-4" />
+                Powered by ChatGPT
+              </div>
+            </div>
+            <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+              {report.description}
+            </p>
+          </div>
+        )}
 
         {/* 미디어 섹션 */}
         <MediaSection />
@@ -283,14 +325,6 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
             >
               <ChevronRight className="h-6 w-6" />
             </button>
-          </div>
-        )}
-
-        {/* 추가 설명이 있는 경우 */}
-        {report.description && (
-          <div className="mt-8 rounded-lg bg-gray-50 p-6 dark:bg-gray-900">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">상세 설명</h3>
-            <p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{report.description}</p>
           </div>
         )}
       </div>
