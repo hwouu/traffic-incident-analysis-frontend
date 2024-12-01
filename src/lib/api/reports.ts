@@ -22,7 +22,8 @@ export const reportsApi = {
 
       const response = await fetch(`${API_BASE_URL}/api/report`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
         credentials: 'include',
       });
@@ -31,11 +32,13 @@ export const reportsApi = {
         if (response.status === 401) {
           throw new APIError(401, '인증이 만료되었습니다. 다시 로그인해주세요.');
         }
-        throw new APIError(response.status, '보고서 조회에 실패했습니다.');
+        const errorData = await response.json();
+        throw new APIError(response.status, errorData.message || '보고서 조회에 실패했습니다.');
       }
 
       const data = await response.json();
-      return data.reports;
+      console.log('API Response:', data);
+      return data.reports || [];
     } catch (error) {
       console.error('Reports fetch error:', error);
       if (error instanceof APIError) {
@@ -55,7 +58,8 @@ export const reportsApi = {
 
       const response = await fetch(`${API_BASE_URL}/api/report/${reportId}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
         credentials: 'include',
       });
@@ -67,7 +71,8 @@ export const reportsApi = {
         if (response.status === 401) {
           throw new APIError(401, '인증이 만료되었습니다. 다시 로그인해주세요.');
         }
-        throw new APIError(response.status, '보고서 조회에 실패했습니다.');
+        const errorData = await response.json();
+        throw new APIError(response.status, errorData.message || '보고서 조회에 실패했습니다.');
       }
 
       const data = await response.json();

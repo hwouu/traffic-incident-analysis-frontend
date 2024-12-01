@@ -1,3 +1,4 @@
+// src/types/report/index.ts
 export interface Vehicle {
   type: string;
   color: string;
@@ -6,7 +7,7 @@ export interface Vehicle {
 
 export interface AccidentType {
   type: string;
-  severity: string;
+  severity: '경미' | '보통' | '심각';
 }
 
 export interface DamagedSituation {
@@ -24,9 +25,14 @@ export interface Report {
   damaged_situation: DamagedSituation;
   number_of_vehicle: number;
   vehicle: Vehicle[];
-  description: string | null;
+  description: string;
   fileUrl: string[] | null;
-  fileType: string | null;
   created_at: string;
   updated_at: string;
+  fileType: 'image' | 'video' | null;
+}
+
+export interface ReportListProps {
+  reports: Report[];
+  onSelectReport: (report: Report) => void;
 }

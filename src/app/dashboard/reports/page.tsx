@@ -1,31 +1,34 @@
 // src/app/dashboard/reports/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LayoutGrid, List, Loader2 } from 'lucide-react';
-import type { Report } from '@/types/report';
-import { reportsApi } from '@/lib/api/reports';
+import { Report } from '@/types/report';
 import ReportList from '@/components/reports/ReportList';
 import ReportGrid from '@/components/reports/ReportGrid';
 import ReportModal from '@/components/reports/ReportModal';
+import { reportsApi } from '@/lib/api/reports';
+import { generateReportTitle } from '@/lib/utils/report';
 
 export default function ReportsPage() {
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
+        setLoading(true);
         const fetchedReports = await reportsApi.getReports();
         setReports(fetchedReports);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : '보고서를 불러오는데 실패했습니다.');
+        console.error('Failed to fetch reports:', err);
       } finally {
         setLoading(false);
       }
@@ -35,9 +38,9 @@ export default function ReportsPage() {
   }, []);
 
   const filteredReports = reports.filter((report) => {
-    const matchesSearch =
-      report.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.accident_type.type.toLowerCase().includes(searchTerm.toLowerCase());
+    const title = generateReportTitle(report).toLowerCase();
+    const matchesSearch = title.includes(searchTerm.toLowerCase()) ||
+      report.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === '' || report.accident_type.type === selectedType;
     return matchesSearch && matchesType;
   });
@@ -48,7 +51,7 @@ export default function ReportsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
+      <div className="flex h-96 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -56,8 +59,8 @@ export default function ReportsPage() {
 
   if (error) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <p className="text-red-500">{error}</p>
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-red-500">{error}</div>
       </div>
     );
   }
@@ -74,16 +77,6 @@ export default function ReportsPage() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setViewMode('list')}
-              className={`rounded-lg p-2 ${
-                viewMode === 'list'
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-              }`}
-            >
-              <List className="h-5 w-5" />
-            </button>
-            <button
               onClick={() => setViewMode('grid')}
               className={`rounded-lg p-2 ${
                 viewMode === 'grid'
@@ -92,6 +85,16 @@ export default function ReportsPage() {
               }`}
             >
               <LayoutGrid className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`rounded-lg p-2 ${
+                viewMode === 'list'
+                  ? 'bg-primary text-white'
+                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+              }`}
+            >
+              <List className="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -111,18 +114,16 @@ export default function ReportsPage() {
           >
             <option value="">모든 유형</option>
             {uniqueAccidentTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+              <option key={type} value={type}>{type}</option>
             ))}
           </select>
         </div>
       </div>
 
-      {viewMode === 'list' ? (
-        <ReportList reports={filteredReports} onSelectReport={setSelectedReport} />
-      ) : (
+      {viewMode === 'grid' ? (
         <ReportGrid reports={filteredReports} onSelectReport={setSelectedReport} />
+      ) : (
+        <ReportList reports={filteredReports} onSelectReport={setSelectedReport} />
       )}
 
       {selectedReport && (
