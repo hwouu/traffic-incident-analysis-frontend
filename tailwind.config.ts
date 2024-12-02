@@ -29,6 +29,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-geist-sans)'],
         mono: ['var(--font-geist-mono)'],
+        jamsil: ['The Jamsil', 'sans-serif'],
       },
       keyframes: {
         fadeIn: {
@@ -38,7 +39,8 @@ const config: Config = {
       },
       animation: {
         fadeIn: 'fadeIn 0.7s ease-out forwards',
-      }
+      },
+      
     },
   },
   plugins: [],

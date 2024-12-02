@@ -7,6 +7,7 @@ import SlideContent from './SlideContent';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import ThemeToggle from '../common/ThemeToggle';
+import Image from 'next/image';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -47,6 +48,15 @@ export function WelcomeSlide() {
 
   return (
     <div className="relative h-full w-full">
+
+        <div className="fixed inset-0 z-0">
+          <Image 
+            src= "/images/test_bg.png"
+            alt="Background" 
+            fill 
+            className="object-cover opacity-70 dark:opacity-70" 
+          />
+        </div>
       {/* 상단 헤더 영역 통합 */}
       <div className="absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6">
         <Logo variant="with-text" size="xl" />
@@ -67,12 +77,34 @@ export function WelcomeSlide() {
           delay: 3000,
           disableOnInteraction: false,
         }}
-        className="h-full"
+        className="relative z-10 h-full"
+        onSlideChangeTransitionStart={(swiper) => {
+          swiper.slides.forEach((slide, index) => {
+            if (index === swiper.activeIndex) {
+              slide.style.visibility = 'visible';
+              slide.style.opacity = '1';
+            } else {
+              slide.style.visibility = 'hidden';
+              slide.style.opacity = '0';
+            }
+          });
+        }}
+        onInit={(swiper) => {
+          swiper.slides.forEach((slide, index) => {
+            if (index === swiper.activeIndex) {
+              slide.style.visibility = 'visible';
+              slide.style.opacity = '1';
+            } else {
+              slide.style.visibility = 'hidden';
+              slide.style.opacity = '0';
+            }
+          });
+        }}
       >
         {slides.map((slide, index) => (
           <SwiperSlide
             key={index}
-            className="bg-background transition-colors dark:bg-dark-background"
+            className="bg-transparent"
           >
             <SlideContent title={slide.title} secondTitle={slide.secondTitle} description={slide.description} image={slide.image} />
 

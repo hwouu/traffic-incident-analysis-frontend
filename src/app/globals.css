@@ -20,10 +20,53 @@
   }
 }
 
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-bold.ttf') format('truetype');
+  font-weight: 700; /* Bold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-extra-bold.ttf') format('truetype');
+  font-weight: 800; /* Extra Bold */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-light.ttf') format('truetype');
+  font-weight: 300; /* Light */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-medium.ttf') format('truetype');
+  font-weight: 500; /* Medium */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-regular.ttf') format('truetype');
+  font-weight: 400; /* Regular */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'The Jamsil';
+  src: url('/fonts/the-jamsil-thin.ttf') format('truetype');
+  font-weight: 100; /* Thin */
+  font-style: normal;
+}
+
+
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif,'MyFont';
 }
 
 .swiper-pagination-bullet {
