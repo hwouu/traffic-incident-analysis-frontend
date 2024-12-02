@@ -51,10 +51,10 @@ export function WelcomeSlide() {
 
         <div className="fixed inset-0 z-0">
           <Image 
-            src= "/images/test_bg.png"
+            src= "/images/street-bg.svg"
             alt="Background" 
             fill 
-            className="object-cover opacity-70 dark:opacity-70" 
+            className="object-cover opacity-70 dark:opacity-50" 
           />
         </div>
       {/* 상단 헤더 영역 통합 */}
