@@ -3,6 +3,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, A11y, EffectFade, Autoplay } from 'swiper/modules';
 import Logo from '@/components/common/Logo';
+import { getBackgroundImage } from '@/components/common/BgImages';
 import SlideContent from './SlideContent';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
@@ -17,6 +18,7 @@ import 'swiper/css/effect-fade';
 export function WelcomeSlide() {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
+  const backgroundSrc = getBackgroundImage('desktop');
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
@@ -51,7 +53,7 @@ export function WelcomeSlide() {
 
         <div className="fixed inset-0 z-0">
           <Image 
-            src= "/images/street-bg.svg"
+            src= {backgroundSrc}
             alt="Background" 
             fill 
             className="object-cover opacity-70 dark:opacity-50" 
