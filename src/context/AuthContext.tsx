@@ -3,8 +3,10 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { getCurrentUser } from '@/lib/auth/auth';
+// UserProfile 타입을 중복 정의하지 않고 import만 사용
 import type { UserProfile } from '@/types/auth';
 
+// AuthContextType 타입 정의 추가
 type AuthContextType = {
   user: UserProfile | null;
   setUser: (user: UserProfile | null) => void;
@@ -22,10 +24,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setIsLoading(true);
         const currentUser = await getCurrentUser();
-        console.log('Current user:', currentUser); // 로그 추가
+        console.log('Current user:', currentUser);
         setUser(currentUser);
       } catch (error) {
-        console.error('Auth initialization error:', error); // 에러 로그 추가
+        console.error('Auth initialization error:', error);
       } finally {
         setIsLoading(false);
       }

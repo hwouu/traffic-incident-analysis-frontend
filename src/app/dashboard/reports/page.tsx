@@ -24,23 +24,12 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Auth state:', { user, authLoading }); // 디버깅용 로그
-
-    if (!authLoading && !user) {
-      console.log('Redirecting to login: no user found');
-      router.push('/login');
-      return;
-    }
-
     const fetchReports = async () => {
       try {
         setLoading(true);
         const fetchedReports = await reportsApi.getReports();
-
-        // 현재 로그인한 사용자의 보고서만 필터링
-        const userReports = fetchedReports.filter((report) => report.user_id === user?.id);
-
-        setReports(userReports);
+        // user?.id 체크를 하지 않고 바로 데이터 설정
+        setReports(fetchedReports);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : '보고서를 불러오는데 실패했습니다.');
@@ -51,9 +40,10 @@ export default function ReportsPage() {
     };
 
     if (user) {
+      // user 객체만 있으면 조회 진행
       fetchReports();
     }
-  }, [user, authLoading, router]);
+  }, [user]);
 
   const filteredReports = reports.filter((report) => {
     const title = generateReportTitle(report).toLowerCase();
