@@ -2,6 +2,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { LayoutGrid, List, Loader2 } from 'lucide-react';
 import { Report } from '@/types/report';
 import ReportList from '@/components/reports/ReportList';
@@ -11,6 +13,8 @@ import { reportsApi } from '@/lib/api/reports';
 import { generateReportTitle } from '@/lib/utils/report';
 
 export default function ReportsPage() {
+  const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +28,7 @@ export default function ReportsPage() {
       try {
         setLoading(true);
         const fetchedReports = await reportsApi.getReports();
+        // user?.id 체크를 하지 않고 바로 데이터 설정
         setReports(fetchedReports);
         setError(null);
       } catch (err) {
@@ -34,12 +39,16 @@ export default function ReportsPage() {
       }
     };
 
-    fetchReports();
-  }, []);
+    if (user) {
+      // user 객체만 있으면 조회 진행
+      fetchReports();
+    }
+  }, [user]);
 
   const filteredReports = reports.filter((report) => {
     const title = generateReportTitle(report).toLowerCase();
-    const matchesSearch = title.includes(searchTerm.toLowerCase()) ||
+    const matchesSearch =
+      title.includes(searchTerm.toLowerCase()) ||
       report.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === '' || report.accident_type.type === selectedType;
     return matchesSearch && matchesType;
@@ -114,7 +123,9 @@ export default function ReportsPage() {
           >
             <option value="">모든 유형</option>
             {uniqueAccidentTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
