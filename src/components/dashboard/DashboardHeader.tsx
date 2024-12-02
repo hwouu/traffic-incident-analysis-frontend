@@ -22,14 +22,14 @@ export default function DashboardHeader() {
 
  return (
    <header className="border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-800">
-     <div className="flex h-14 items-center justify-between px-4 md:px-6">
+     <div className="flex h-16 items-center justify-between px-4 md:px-6">
        {/* 모바일: 메뉴 버튼, 중앙 정렬 로고, 우측 아이콘들 */}
        <div className="relative flex w-full items-center justify-between md:w-auto">
          <button
            onClick={() => setIsMobileOpen(true)}
-           className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 md:hidden"
+           className="rounded-lg p-4 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 md:hidden"
          >
-           <Menu className="h-6 w-6" />
+           <Menu className="h-7 w-7" />
          </button>
 
          {/* 모바일: 중앙 정렬된 로고 */}
