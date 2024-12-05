@@ -4,12 +4,12 @@ import { format } from 'date-fns';
 import { Car, MapPin } from 'lucide-react';
 import { generateReportTitle, getStatusBadge } from '@/lib/utils/report';
 
-interface ReportGridProps {
+interface ReportListProps {
   reports: Report[];
   onSelectReport: (report: Report) => void;
 }
 
-export default function ReportGrid({ reports, onSelectReport }: ReportGridProps) {
+export default function ReportList({ reports, onSelectReport }: ReportListProps) {
   return (
     <div className="rounded-lg bg-white shadow-sm dark:bg-gray-800">
       <div className="overflow-x-auto">
