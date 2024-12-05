@@ -66,30 +66,30 @@ export default function DashboardSidebar() {
 
       <aside
         className={`fixed left-0 top-0 z-40 h-screen w-[280px] transform border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 md:sticky ${
-          isCollapsed ? 'md:w-20' : 'md:w-64'
+          isCollapsed ? 'md:w-28' : 'md:w-68'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         {/* Toggle Button - Desktop Only */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 hidden h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 md:flex"
+          className="absolute -right-3 top-6 hidden h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 md:flex"
         >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {isCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </button>
 
         {/* Logo */}
-        <div className="flex h-14 items-center justify-center border-b border-gray-200 px-4 dark:border-gray-700">
+        <div className="flex h-16 items-center justify-center border-b border-gray-200 px-6 dark:border-gray-700">
           {isCollapsed ? (
-            <span className="text-xl font-bold text-gray-900 dark:text-white">TAS</span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">TAS</span>
           ) : (
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">
               교통사고 분석 시스템
             </span>
           )}
         </div>
 
         {/* Menu Items */}
-        <nav className="flex-1 space-y-1 px-2 py-4">
+        <nav className="flex-1 space-y-2 px-4 py-6">
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
@@ -97,13 +97,13 @@ export default function DashboardSidebar() {
                 key={item.path}
                 href={item.path}
                 onClick={() => setIsMobileOpen(false)}
-                className={`flex items-center space-x-2 rounded-lg px-3 py-2 transition-colors ${
+                className={`flex items-center space-x-2 rounded-lg px-5 py-4 transition-colors ${
                   isActive
-                    ? 'bg-primary font-bold text-white'
-                    : 'font-bold text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                    ? 'bg-primary text-xl font-bold text-white'
+                    : 'font-bold text-xl text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
                 }`}
               >
-                <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : ''}`} />
+                <item.icon className={`h-8 w-8 ${isCollapsed ? 'mx-auto' : ''}`} />
                 {!isCollapsed && <span>{item.name}</span>}
               </Link>
             );
@@ -111,13 +111,13 @@ export default function DashboardSidebar() {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="border-t border-gray-200 px-2 py-4 dark:border-gray-700">
+        <div className="border-t border-gray-200 px-4 py-6 dark:border-gray-700">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center rounded-lg px-3 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+            className="flex w-full items-center rounded-lg px-5 py-4 text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : ''}`} />
-            {!isCollapsed && <span className="ml-2">로그아웃</span>}
+            <LogOut className={`h-8 w-8 ${isCollapsed ? 'mx-auto' : ''}`} />
+            {!isCollapsed && <span className="ml-4 text-xl">로그아웃</span>}
           </button>
         </div>
       </aside>

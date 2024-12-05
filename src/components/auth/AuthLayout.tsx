@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import { GreenBGLogo } from '@/components/common/Logo';
 import Logo from '@/components/common/Logo';
+import { getBackgroundImage } from '@/components/common/BgImages';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
 import 'swiper/css';
@@ -16,6 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   const [mounted, setMounted] = useState(false);
   const [showSecondTitle, setShowSecondTitle] = useState(false);
   const { theme } = useTheme(); 
+  const backgroundSrc = getBackgroundImage('mobile');
 
   // useEffect only runs on the client, so now we can safely show the UI
   useEffect(() => {
@@ -53,7 +55,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <div className="flex min-h-screen bg-background dark:bg-dark-background">
+    <div className="flex min-h-screen bg-transparent dark:bg-dark-background">
       {/* Left Section - SVG Slider */}
       <div className="hidden w-1/2 bg-primary/10 lg:block dark:#0F3134">
         {/* 왼쪽 상단에 로고 추가 */}
@@ -110,21 +112,29 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </Swiper>
       </div>
 
-      {/* Right Section - Login Form */}
-      <div className="flex w-full flex-col lg:w-1/2">
-        <div className="absolute right-0 top-0 flex h-20 w-full items-center justify-end px-6">
-          <ThemeToggle />
+      <div className="relative flex w-full flex-col lg:w-1/2">
+          {/* 배경 이미지 */}
+     
+        <Image
+          src={backgroundSrc} // 배경 이미지 경로
+          alt="Login Section Background"
+          fill
+          className="absolute inset-0 object-cover opacity-70 dark:opacity-50"
+         />
+       
+        <div className="absolute right-0 top-0 z-5 flex h-20 w-full items-center justify-end px-6">
+            <ThemeToggle />
         </div>
 
-        <div className="flex min-h-screen w-full items-center justify-center bg-white px-6 transition-colors dark:bg-gray-900">
-          <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
-            {/* Mobile Logo */}
-            <div className="mb-8 flex justify-center lg:hidden">
-              <Logo variant="with-text" size="xl" />
+        <div className="flex z-5 min-h-screen w-full items-center justify-center bg-white px-6 transition-colors dark:bg-transparent">
+            <div className="relative w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
+              <div className="mb-8 flex justify-center lg:hidden">
+                <Logo variant="with-text" size="xl" />
+              </div>
+              {children}
             </div>
-            {children}
-          </div>
         </div>
+
       </div>
     </div>
   );
