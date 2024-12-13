@@ -1,69 +1,68 @@
+// src/components/dashboard/DashboardSidebar.tsx
+'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import {
   LayoutDashboard,
   FileText,
   MessageSquareText,
   BarChart3,
   LogOut,
-  ChevronLeft,
-  ChevronRight,
   Car,
   Globe,
   Users,
-  Settings,
 } from 'lucide-react';
 import { logout } from '@/lib/auth/auth';
 import { useDashboard } from '@/context/DashboardContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function DashboardSidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const { isMobileOpen, setIsMobileOpen } = useDashboard();
+  const { isMobileOpen, setIsMobileOpen, isCollapsed } = useDashboard();
+  const { user, isLoading } = useAuth();
   const pathname = usePathname();
+
+  console.log('User Info:', user);
+  console.log('Is Loading:', isLoading);
+  console.log('Is Collapsed:', isCollapsed);
 
   const menuItems = [
     {
       name: '대시보드',
       icon: LayoutDashboard,
       path: '/dashboard',
-      description: '전체 현황 확인',
     },
     {
       name: '사고 분석',
       icon: MessageSquareText,
       path: '/dashboard/analysis/chat',
-      description: 'ChatGPT 기반 분석',
     },
     {
       name: '보고서',
       icon: FileText,
       path: '/dashboard/reports',
-      description: '분석 보고서 관리',
     },
     {
       name: '통계',
       icon: BarChart3,
       path: '/dashboard/statistics',
-      description: '데이터 통계 분석',
     },
     {
       name: '실시간 교통',
       icon: Car,
       path: '/dashboard/traffic',
-      description: '실시간 교통 정보',
     },
     {
       name: '사고 현황',
       icon: Globe,
       path: '/dashboard/accident',
-      description: '전국 사고 통계',
     },
     {
       name: '커뮤니티',
       icon: Users,
       path: '/dashboard/community',
-      description: '사용자 커뮤니티',
     },
   ];
 
@@ -80,76 +79,91 @@ export default function DashboardSidebar() {
 
   return (
     <>
-      {/* Mobile Overlay */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-40 h-screen transform border-r border-gray-200 bg-white transition-transform duration-300 dark:border-gray-800 dark:bg-gray-900 md:sticky ${
-          isCollapsed ? 'md:w-20' : 'md:w-64'
+        className={`fixed left-0 z-30 flex h-[calc(100vh-4rem)] flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 md:relative ${
+          isCollapsed ? 'w-20' : 'w-64'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
-        {/* Toggle Button */}
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 hidden h-6 w-6 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 md:flex"
-        >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
-
-        {/* Logo */}
-        <div className="flex h-16 items-center border-b border-gray-200 px-4 dark:border-gray-700">
-          {isCollapsed ? (
-            <span className="mx-auto text-xl font-bold text-gray-900 dark:text-white">TAS</span>
-          ) : (
-            <span className="text-lg font-bold text-gray-900 dark:text-white">교통사고 분석 시스템</span>
-          )}
-        </div>
+        {/* User Profile Section */}
+        {isLoading ? (
+          <div 
+            className={`flex flex-col border-b border-gray-200 dark:border-gray-700 ${
+              isCollapsed ? 'items-center p-4' : 'items-center p-6'
+            }`}
+          >
+            <div 
+              className={`animate-pulse rounded-full bg-gray-200 dark:bg-gray-700 ${
+                isCollapsed ? 'h-10 w-10' : 'h-20 w-20'
+              }`} 
+            />
+            {!isCollapsed && (
+              <div className="mt-4 w-full text-center">
+                <div className="mx-auto h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                <div className="mx-auto mt-2 h-3 w-32 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            className={`flex flex-col border-b border-gray-200 dark:border-gray-700 ${
+              isCollapsed ? 'items-center p-4' : 'items-center p-6'
+            }`}
+          >
+            <Image
+              src="/images/profile/default-avatar.svg"
+              alt="Profile"
+              width={isCollapsed ? 40 : 80}
+              height={isCollapsed ? 40 : 80}
+              className="flex-shrink-0"
+            />
+            {!isCollapsed && (
+              <div className="mt-4 w-full text-center">
+                <h3 className="text-base font-medium text-gray-900 dark:text-white">
+                  {user?.nickname || '사용자'}
+                </h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  {user?.email || 'user@example.com'}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Menu Items */}
-        <div className="flex h-[calc(100vh-4rem)] flex-col justify-between">
-          <nav className="space-y-1 p-4">
-            {menuItems.map((item) => {
-              const isActive = pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  onClick={() => setIsMobileOpen(false)}
-                  className={`group flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'bg-primary text-white'
-                      : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                  {!isCollapsed && (
-                    <div className="flex flex-col">
-                      <span>{item.name}</span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {item.description}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Bottom Section */}
-          <div className="border-t border-gray-200 p-4 dark:border-gray-700">
-            <button
-              onClick={handleLogout}
-              className="flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+        <nav className="flex-1 overflow-y-auto p-4">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              href={item.path}
+              onClick={() => setIsMobileOpen(false)}
+              className={`group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
+                pathname === item.path
+                  ? 'bg-primary text-white'
+                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+              }`}
             >
-              <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-              {!isCollapsed && <span>로그아웃</span>}
-            </button>
-          </div>
+              <item.icon className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+              {!isCollapsed && <span>{item.name}</span>}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Logout Button */}
+        <div className="border-t border-gray-200 p-4 dark:border-gray-700">
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+          >
+            <LogOut className={`h-5 w-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+            {!isCollapsed && <span>로그아웃</span>}
+          </button>
         </div>
       </aside>
     </>

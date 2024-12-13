@@ -1,3 +1,4 @@
+// src/app/dashboard/layout.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -12,10 +13,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // 클라이언트 사이드에서 auth 쿠키 확인
     const checkAuth = () => {
       const cookies = document.cookie.split(';');
       const hasAuthCookie = cookies.some(cookie => 
@@ -33,18 +32,10 @@ export default function DashboardLayout({
 
   return (
     <DashboardProvider>
-      <div className="flex min-h-screen max-w-full bg-gray-100 dark:bg-gray-900">
-        {/* Mobile menu overlay */}
-        {isMobileMenuOpen && (
-          <div 
-            className="fixed inset-0 z-20 bg-gray-900/50 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-
-        <DashboardSidebar />
-        <div className="flex w-full flex-1 flex-col overflow-hidden">
-          <DashboardHeader />
+      <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
+        <DashboardHeader />
+        <div className="flex flex-1">
+          <DashboardSidebar />
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>
