@@ -1,140 +1,298 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle, Clock, CheckCircle, MessageSquareText, FileText } from 'lucide-react';
-import { getCurrentUser } from '@/lib/auth/auth';
-import type { UserProfile } from '@/types/auth';
+import {
+  MessageSquareText,
+  FileText,
+  BarChart3,
+  Car,
+  AlertTriangle,
+  Users,
+  ChevronRight,
+  Trophy,
+  Clock,
+} from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
+import Image from 'next/image';
 import Link from 'next/link';
+import { getCurrentUser } from '@/lib/auth/auth';
+import { reportsApi } from '@/lib/api/reports';
+import type { UserProfile } from '@/types/auth';
+import type { Report } from '@/types/report';
 
 export default function DashboardContent() {
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await getCurrentUser();
-      if (userData) {
-        setUser(userData);
+    const fetchData = async () => {
+      try {
+        const [userData, reportsData] = await Promise.all([
+          getCurrentUser(),
+          reportsApi.getReports(),
+        ]);
+        if (userData) setUser(userData);
+        setReports(reportsData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '데이터 로딩 중 오류가 발생했습니다');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUser();
+    fetchData();
   }, []);
 
+  // 통계 데이터 계산
+  const stats = {
+    total: reports.length,
+    severe: reports.filter((r) => r.accident_type.severity === '심각').length,
+    moderate: reports.filter((r) => r.accident_type.severity === '보통').length,
+    minor: reports.filter((r) => r.accident_type.severity === '경미').length,
+  };
+
+  // 월별 데이터 계산 (date 필드 기준)
+  const monthlyData = reports.reduce(
+    (acc, report) => {
+      const month = new Date(report.date).getMonth();
+      acc[month] = (acc[month] || 0) + 1;
+      return acc;
+    },
+    {} as Record<number, number>
+  );
+
+  const chartData = Array.from({ length: 12 }, (_, month) => ({
+    name: `${month + 1}월`,
+    건수: monthlyData[month] || 0,
+  }));
+
+  const quickAccessCards = [
+    {
+      title: '사고 분석',
+      description: 'AI 기반 사고 분석 챗봇',
+      icon: MessageSquareText,
+      link: '/dashboard/analysis/chat',
+      bgColor: 'bg-blue-500',
+
+      image: '/images/dashboard/menu-cards/chat.png',
+    },
+    {
+      title: '보고서',
+      description: '분석 보고서 조회 및 관리',
+      icon: FileText,
+      link: '/dashboard/reports',
+      bgColor: 'bg-amber-500',
+
+      image: '/images/dashboard/menu-cards/reports.png',
+    },
+    {
+      title: '통계',
+      description: '보고서 기반 통계 확인',
+      icon: BarChart3,
+      link: '/dashboard/statistics',
+      bgColor: 'bg-indigo-500',
+
+      image: '/images/dashboard/menu-cards/statistics.png',
+    },
+    {
+      title: '실시간 교통',
+      description: '도로교통공사 기반 실시간 교통 상황 확인',
+      icon: Car,
+      link: '/dashboard/traffic',
+      bgColor: 'bg-emerald-500',
+
+      image: '/images/dashboard/menu-cards/traffic.png',
+    },
+    {
+      title: '사고 현황',
+      description: '전국 사고 현황 확인',
+      icon: AlertTriangle,
+      link: '/dashboard/accident',
+      bgColor: 'bg-rose-500',
+
+      image: '/images/dashboard/menu-cards/accident.png',
+    },
+    {
+      title: '커뮤니티',
+      description: '공지사항, 1:1 문의, FAQ',
+      icon: Users,
+      link: '/dashboard/community',
+      bgColor: 'bg-purple-500',
+
+      image: '/images/dashboard/menu-cards/community.png',
+    },
+  ];
+
+  if (loading) return <div className="flex h-full items-center justify-center">로딩 중...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+
   return (
-    <div className="space-y-4 p-4 md:space-y-6 md:p-6">
-      {/* Welcome Section */}
-      <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:p-6">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white md:text-2xl">
-          안녕하세요, {user?.nickname || '사용자'}님
-        </h2>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 md:text-base">
-          교통사고 분석 시스템에 오신 것을 환영합니다.
-        </p>
-
-        {/* Quick Access Buttons */}
-        <div className="mt-4 flex flex-col space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
-          <Link
-            href="/dashboard/analysis/chat"
-            className="flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-600 md:text-base"
-          >
-            <MessageSquareText className="mr-2 h-5 w-5" />
-            사고 신고 챗봇 시작
-          </Link>
-          <Link
-            href="/dashboard/reports"
-            className="flex items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-sm text-white transition-colors hover:bg-green-600 md:text-base"
-          >
-            <FileText className="mr-2 h-5 w-5" />
-            보고서 목록 확인
-          </Link>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
-        <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:p-6">
-          <div className="flex items-center space-x-3">
-            <AlertTriangle className="h-8 w-8 text-yellow-500" />
+    <div className="space-y-8 p-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 p-6 shadow-sm dark:from-amber-900/20 dark:to-amber-800/20">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">진행 중인 분석</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-white">2</p>
+              <p className="text-sm font-medium text-amber-600 dark:text-amber-400">총 사고 분석</p>
+              <p className="mt-2 text-3xl font-bold text-amber-700 dark:text-amber-300">
+                {stats.total}
+              </p>
             </div>
+            <span className="rounded-lg bg-amber-500/10 p-2.5">
+              <Trophy className="h-6 w-6 text-amber-600" />
+            </span>
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:p-6">
-          <div className="flex items-center space-x-3">
-            <Clock className="h-8 w-8 text-blue-500" />
+        <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-6 shadow-sm dark:from-red-900/20 dark:to-red-800/20">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">대기 중</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-white">1</p>
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">심각 사고</p>
+              <p className="mt-2 text-3xl font-bold text-red-700 dark:text-red-300">
+                {stats.severe}
+              </p>
             </div>
+            <span className="rounded-lg bg-red-500/10 p-2.5">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </span>
           </div>
         </div>
 
-        <div className="rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:p-6">
-          <div className="flex items-center space-x-3">
-            <CheckCircle className="h-8 w-8 text-green-500" />
+        <div className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-6 shadow-sm dark:from-green-900/20 dark:to-green-800/20">
+          <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">분석 완료</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-white">5</p>
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">경미 사고</p>
+              <p className="mt-2 text-3xl font-bold text-green-700 dark:text-green-300">
+                {stats.minor}
+              </p>
             </div>
+            <span className="rounded-lg bg-green-500/10 p-2.5">
+              <Car className="h-6 w-6 text-green-600" />
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Recent Reports Table */}
-      <div className="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
-        <div className="p-4 md:p-6">
-          <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
-            최근 분석 내역
-          </h3>
-          <div className="w-full overflow-x-auto">
-            <table className="w-full whitespace-nowrap">
-              <thead>
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 md:px-6">
-                    분석 일시
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 md:px-6">
-                    위치
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 md:px-6">
-                    상태
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-4 py-4 text-sm text-gray-800 dark:text-gray-200 md:px-6">
-                    2024-11-08 14:30
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-800 dark:text-gray-200 md:px-6">
-                    서울시 강남구
-                  </td>
-                  <td className="px-4 py-4 text-sm md:px-6">
-                    <span className="rounded-full bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-800 dark:bg-yellow-900/30">
-                      분석 중
-                    </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-4 py-4 text-sm text-gray-800 dark:text-gray-200 md:px-6">
-                    2024-11-07 09:15
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-800 dark:text-gray-200 md:px-6">
-                    서울시 송파구
-                  </td>
-                  <td className="px-4 py-4 text-sm md:px-6">
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/30">
-                      완료
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Chart Section */}
+        <div className="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-white">
+              월별 사고 발생 현황
+            </h3>
+            <Link href="/dashboard/statistics" className="text-sm text-primary hover:underline">
+              자세히 보기
+            </Link>
+          </div>
+          <div className="mt-4 h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} />
+                <YAxis stroke="#94a3b8" fontSize={12} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="건수"
+                  stroke="#6366f1"
+                  strokeWidth={2}
+                  dot={{ strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
+
+        {/* Recent Analysis */}
+        <div className="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-white">최근 분석</h3>
+            <Link href="/dashboard/reports" className="text-sm text-primary hover:underline">
+              전체보기
+            </Link>
+          </div>
+          <div className="mt-4 space-y-4">
+            {reports.slice(0, 3).map((report) => (
+              <div
+                key={report.report_id}
+                className="flex items-start gap-3 rounded-lg border border-gray-100 p-3 dark:border-gray-700"
+              >
+                <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/30">
+                  <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
+                    {report.location}에서 사고 분석
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(report.date).toLocaleDateString()}
+                  </p>
+                </div>
+                <span
+                  className={`rounded-full px-2 py-1 text-xs font-medium ${
+                    report.accident_type.severity === '심각'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30'
+                      : report.accident_type.severity === '보통'
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30'
+                        : 'bg-green-100 text-green-800 dark:bg-green-900/30'
+                  }`}
+                >
+                  {report.accident_type.severity}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Access Cards */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        {quickAccessCards.map((card) => (
+          <Link
+            key={card.title}
+            href={card.link}
+            className="group flex h-[140px] items-start gap-4 rounded-xl bg-white p-5 shadow-sm transition-all hover:shadow-md dark:bg-gray-800"
+          >
+            {/* Left: Image Section */}
+            <div className="relative aspect-square h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg">
+              <Image
+                src={card.image}
+                alt={card.title}
+                width={96}
+                height={96}
+                className="h-full w-full object-cover transition-all group-hover:scale-105"
+              />
+            </div>
+
+            {/* Right: Content Section */}
+            <div className="flex h-full flex-1 flex-col">
+              <div className="mb-2 flex items-center justify-between">
+                <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1.5`}>
+                  <card.icon className="h-4 w-4 text-white" />
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1" />
+              </div>
+
+              <h3 className="mb-1.5 text-sm font-semibold text-gray-800 dark:text-white">
+                {card.title}
+              </h3>
+              <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+                {card.description}
+              </p>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
