@@ -5,84 +5,104 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 
 interface LogoProps {
-  variant?: 'main' | 'with-text';
+  variant?: 'main' | 'with-text' | 'icon-only';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
+  withLink?: boolean;
 }
 
 const SIZES = {
   sm: { width: 32, height: 32 },
   md: { width: 48, height: 48 },
   lg: { width: 64, height: 64 },
-  xl: { width: 112, height: 112 },  // 더 큰 크기 추가
+  xl: { width: 112, height: 112 },
 };
 
-export default function Logo({ variant = 'with-text', size = 'md', className = '' }: LogoProps) {
+function LogoContent({ variant, size = 'md', className = '' }: Omit<LogoProps, 'withLink'>) {
   const { width, height } = SIZES[size];
-  const logoDark = `/images/logo-dark-${variant}.svg`;
-  const logoLight = `/images/logo-light-${variant}.svg`;
+  const logoVariant = variant === 'icon-only' ? 'main' : variant;
+  const logoDark = `/images/logo-dark-${logoVariant}.svg`;
+  const logoLight = `/images/logo-light-${logoVariant}.svg`;
   const { theme } = useTheme();
 
   return (
-    <Link href="/" className={`flex items-center ${className}`}>
+    <div className={`flex items-center ${className}`}>
       <div className="relative">
-      {theme === 'dark' ? (
-        <Image
-        src={logoDark}
-        alt="사고 탐정"
-        width={width}
-        height={height}
-        priority
-        className="object-contain"
-      />
-      ) : (
-        <Image
-          src={logoLight}
-          alt="사고 탐정"
-          width={width}
-          height={height}
-          priority
-          className="object-contain"
-        />
-      )}
-        
+        {theme === 'dark' ? (
+          <Image
+            src={logoDark}
+            alt="사고 탐정"
+            width={width}
+            height={height}
+            priority
+            className="object-contain"
+          />
+        ) : (
+          <Image
+            src={logoLight}
+            alt="사고 탐정"
+            width={width}
+            height={height}
+            priority
+            className="object-contain"
+          />
+        )}
       </div>
       {variant === 'main' && (
         <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">사고 탐정</span>
       )}
-    </Link>
+    </div>
   );
 }
-export function GreenBGLogo({ variant = 'main', size = 'md', className = '' }: LogoProps) {
+
+export default function Logo({ variant = 'with-text', size = 'md', className = '', withLink = true }: LogoProps) {
+  if (withLink) {
+    return (
+      <Link href="/">
+        <LogoContent variant={variant} size={size} className={className} />
+      </Link>
+    );
+  }
+
+  return <LogoContent variant={variant} size={size} className={className} />;
+}
+
+export function GreenBGLogo({ variant = 'main', size = 'md', className = '', withLink = true }: LogoProps) {
   const { width, height } = SIZES[size];
-  const logoDark = `/images/logo-dark-${variant}-green.svg`;
-  const logoLight = `/images/logo-light-${variant}-green.svg`;
+  const logoVariant = variant === 'icon-only' ? 'main' : variant;
+  const logoDark = `/images/logo-dark-${logoVariant}-green.svg`;
+  const logoLight = `/images/logo-light-${logoVariant}-green.svg`;
   const { theme } = useTheme();
 
-  return (
-    <Link href="/" className={`flex items-center ${className}`}>
+  const content = (
+    <div className={`flex items-center ${className}`}>
       <div className="relative">
-      {theme === 'dark' ? (
-        <Image
-        src={logoDark}
-        alt="사고 탐정"
-        width={width}
-        height={height}
-        priority
-        className="object-contain"
-      />
-      ) : (
-        <Image
-          src={logoLight}
-          alt="사고 탐정"
-          width={width}
-          height={height}
-          priority
-          className="object-contain"
-        />
-      )}
-        
+        {theme === 'dark' ? (
+          <Image
+            src={logoDark}
+            alt="사고 탐정"
+            width={width}
+            height={height}
+            priority
+            className="object-contain"
+          />
+        ) : (
+          <Image
+            src={logoLight}
+            alt="사고 탐정"
+            width={width}
+            height={height}
+            priority
+            className="object-contain"
+          />
+        )}
       </div>
-    </Link>
+    </div>
   );
+
+  if (withLink) {
+    return <Link href="/">{content}</Link>;
+  }
+
+  return content;
 }
