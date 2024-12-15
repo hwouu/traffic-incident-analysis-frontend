@@ -13,4 +13,5 @@ export interface UserProfile {
   nickname: string;
   profileImage?: string;
   userType: 'user' | 'admin';
+  isMaster: boolean;  // 추가
 }
