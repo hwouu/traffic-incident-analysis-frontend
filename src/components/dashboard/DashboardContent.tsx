@@ -233,7 +233,7 @@ export default function DashboardContent() {
                 </div>
                 <div className="flex-1 overflow-hidden">
                   <p className="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
-                    {report.location}에서 사고 분석
+                    {report.location}의 사고
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {new Date(report.date).toLocaleDateString()}

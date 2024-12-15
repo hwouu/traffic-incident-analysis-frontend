@@ -1,5 +1,3 @@
-
-// src/components/dashboard/DashboardHeader.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,25 +20,24 @@ export default function DashboardHeader() {
   return (
     <header className="w-full border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
       <div className="flex h-16 items-center px-4 md:px-6">
-        <div className="flex w-full items-center gap-4">
-          <button
-            onClick={() => {
-              setIsMobileOpen(!isMobileOpen);
-              setIsCollapsed(!isCollapsed);
-            }}
-            className="inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <Logo 
-            variant="icon-only" 
-            size="sm"
-            className="hidden md:block" 
-            withLink={false}
-          />
+        <div className="flex w-full items-center justify-between">
+          {/* 로고 및 메뉴 버튼 */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setIsMobileOpen(!isMobileOpen);
+                setIsCollapsed(!isCollapsed);
+              }}
+              className="inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <Logo variant="icon-only" size="sm" className="hidden md:block" withLink={false} />
+          </div>
 
-          <div className="flex-1">
-            <div className="relative max-w-lg">
+          {/* 보고서 검색 박스 */}
+          <div className="flex flex-1 justify-center">
+            <div className="relative w-[800px]">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Search className="h-5 w-5 text-gray-400" />
               </div>
@@ -52,6 +49,7 @@ export default function DashboardHeader() {
             </div>
           </div>
 
+          {/* 테마 토글 및 알림 버튼 */}
           <div className="flex items-center gap-2">
             <ThemeToggle className="relative" />
             <button className="relative inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
