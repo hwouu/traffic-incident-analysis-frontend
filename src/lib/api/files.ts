@@ -9,7 +9,9 @@ interface UploadResponse {
 
 export const uploadFiles = async (
   files: File[],
-  onProgress?: (progress: number) => void
+  onProgress?: (progress: number) => void,
+  reportId?: string,
+  userId?: number
 ): Promise<UploadResponse> => {
   const token = getAuthToken();
   if (!token) {
@@ -20,6 +22,13 @@ export const uploadFiles = async (
   files.forEach((file) => {
     formData.append('files', file);
   });
+  
+  if (reportId) {
+    formData.append('reportId', reportId);
+  }
+  if (userId) {
+    formData.append('userId', userId.toString());
+  }
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -37,7 +46,7 @@ export const uploadFiles = async (
           const response = JSON.parse(xhr.responseText);
           resolve({
             message: response.message,
-            files: response.files
+            files: response.files || response.report?.fileUrl || []
           });
         } catch (error) {
           reject(new Error('서버 응답을 처리할 수 없습니다.'));
@@ -51,7 +60,7 @@ export const uploadFiles = async (
       reject(new Error('네트워크 오류가 발생했습니다.'));
     });
 
-    xhr.open('POST', `${API_BASE_URL}/api/files/upload`);
+    xhr.open('PUT', `${API_BASE_URL}/api/files/upload`);
     xhr.setRequestHeader('Authorization', `Bearer ${token}`);
     xhr.send(formData);
   });
