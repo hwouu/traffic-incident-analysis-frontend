@@ -2,15 +2,23 @@
 
 import { useState } from 'react';
 import { X, Upload, Loader2 } from 'lucide-react';
-import { uploadFiles } from '@/lib/api/files';
+import { uploadFiles } from '@/lib/api/chatbot';
 
 interface MediaUploadProps {
   onClose: () => void;
-  onUploadSuccess?: (urls: string[]) => void;
-  onError?: (error: string) => void;
+  onUploadSuccess: (urls: string[]) => void;
+  onError: (error: string) => void;
+  reportId?: string;
+  userId?: number;
 }
 
-export default function MediaUpload({ onClose, onUploadSuccess, onError }: MediaUploadProps) {
+export default function MediaUpload({
+  onClose,
+  onUploadSuccess,
+  onError,
+  reportId,
+  userId
+}: MediaUploadProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -39,7 +47,7 @@ export default function MediaUpload({ onClose, onUploadSuccess, onError }: Media
       const isValidSize = file.size <= 100 * 1024 * 1024; // 100MB limit
       
       if (!isValidType || !isValidSize) {
-        onError?.('이미지나 동영상 파일만 업로드 가능하며, 각 파일은 100MB를 초과할 수 없습니다.');
+        onError('이미지나 동영상 파일만 업로드 가능하며, 각 파일은 100MB를 초과할 수 없습니다.');
         return false;
       }
       return true;
@@ -50,24 +58,35 @@ export default function MediaUpload({ onClose, onUploadSuccess, onError }: Media
 
   const handleUpload = async () => {
     if (files.length === 0) {
-      onError?.('업로드할 파일을 선택해주세요.');
+      onError('업로드할 파일을 선택해주세요.');
+      return;
+    }
+
+    if (!reportId || !userId) {
+      onError('필수 정보가 누락되었습니다.');
       return;
     }
 
     try {
       setIsUploading(true);
-      const response = await uploadFiles(files, setUploadProgress);
+      const response = await uploadFiles(
+        files,
+        (progress: number) => setUploadProgress(progress),
+        reportId,
+        userId
+      );
       
-      if (response.files && onUploadSuccess) {
-        onUploadSuccess(response.files);
+      if (response.report.fileUrl) {
+        onUploadSuccess(response.report.fileUrl);
       }
       onClose();
     } catch (error) {
-      onError?.(error instanceof Error ? error.message : '파일 업로드 중 오류가 발생했습니다.');
+      onError(error instanceof Error ? error.message : '파일 업로드 중 오류가 발생했습니다.');
     } finally {
       setIsUploading(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
