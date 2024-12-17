@@ -57,9 +57,9 @@ export default function DashboardSidebar() {
       path: '/dashboard/accident',
     },
     {
-      name: '커뮤니티',
+      name: '고객 지원',
       icon: Users,
-      path: '/dashboard/community',
+      path: '/dashboard/service',
     },
   ];
 

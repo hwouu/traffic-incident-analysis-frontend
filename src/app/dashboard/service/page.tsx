@@ -1,6 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getAuthToken } from '@/lib/utils/auth';
+import emailjs from 'emailjs-com';
+
 
 interface Notice {
   id: number;
@@ -80,23 +82,73 @@ function NoticeBoard() {
 
 
 function OneToOneInquiry() {
+  const [userEmail, setUserEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    const templateParams = {
+      reply_to: userEmail, // 사용자 이메일
+      message, // 문의 내용
+      date: new Date().toLocaleString(),
+    };
+
+    try {
+      await emailjs.send(
+        'service_vboh3ve',    // EmailJS에서 발급받은 서비스 ID
+        'template_q4og6aj',   // EmailJS에서 발급받은 템플릿 ID
+        templateParams,       // 템플릿에 전달할 변수
+        'c85MkviZTlG0FIk9V'     // EmailJS에서 발급받은 Public Key (User ID)
+      );
+
+      setSuccess('메일이 성공적으로 전송되었습니다.');
+      setUserEmail('');
+      setMessage('');
+    } catch (err) {
+      setError('메일 전송에 실패했습니다.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-4">
       <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
       <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          문의하실 내용을 남겨주세요. 담당자가 확인 후 최대한 빠르게 답변 드리겠습니다.
-        </p>
+        <input
+          type="email"
+          className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          placeholder="답장을 받을 이메일 주소를 입력하세요."
+          value={userEmail}
+          onChange={(e) => setUserEmail(e.target.value)}
+        />
         <textarea
           className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
           rows={4}
           placeholder="문의 내용을 입력하세요."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
         <button
-          className="mt-2 rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`mt-2 rounded px-4 py-2 text-sm font-semibold text-white shadow ${
+            loading
+              ? 'bg-gray-400'
+              : 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800'
+          }`}
         >
-          제출하기
+          {loading ? '전송 중...' : '제출하기'}
         </button>
+        {success && <p className="mt-2 text-sm text-green-600">{success}</p>}
+        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
       </div>
     </div>
   );
@@ -185,7 +237,7 @@ export default function Page() {
     <div className="flex h-[calc(100vh-3.5rem)] flex-col p-4 md:p-6">
       {/* 첫 번째 줄: 고객지원 센터 제목 */}
       <div className="mb-2">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white md:text-2xl">고객지원 센터</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white md:text-2xl">고객지원</h1>
       </div>
 
       {/* 두 번째 줄: 탭(사이드바) 역할의 버튼들 */}
