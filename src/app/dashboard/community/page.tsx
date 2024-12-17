@@ -1,28 +1,83 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAuthToken } from '@/lib/utils/auth';
+
+interface Notice {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 function NoticeBoard() {
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
+        }
+
+        const response = await fetch('https://www.hwouu.shop/api/notices', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('공지사항을 불러오는 데 실패했습니다.');
+        }
+
+        const data: Notice[] = await response.json();
+        setNotices(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotices();
+  }, []);
+
   return (
     <div className="p-4">
       <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">공지사항 게시판</h2>
+
+      {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
+      {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
+
       {/* 공지사항 목록 */}
-      <div className="space-y-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <h3 className="text-md font-semibold text-gray-900 dark:text-white">[공지] 시스템 점검 안내</h3>
-          <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-            2024년 12월 20일 00:00 ~ 02:00 동안 시스템 점검이 예정되어 있습니다.
-          </p>
+      {!loading && !error && (
+        <div className="space-y-4">
+          {notices.map((notice) => (
+            <div
+              key={notice.id}
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+            >
+              <h3 className="text-md font-semibold text-gray-900 dark:text-white">
+                {notice.title}
+              </h3>
+              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{notice.content}</p>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                작성일: {new Date(notice.createdAt).toLocaleString()} | 수정일:{' '}
+                {new Date(notice.updatedAt).toLocaleString()}
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <h3 className="text-md font-semibold text-gray-900 dark:text-white">[공지] 기능 업데이트 소식</h3>
-          <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-            새롭게 개선된 채팅 인터페이스와 파일 업로드 기능이 추가되었습니다.
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
+
 
 function OneToOneInquiry() {
   return (
@@ -47,28 +102,78 @@ function OneToOneInquiry() {
   );
 }
 
+interface FAQItem {
+  id: number;
+  question: string;
+  answer: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 function FAQ() {
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
+        }
+
+        const response = await fetch('https://www.hwouu.shop/api/faqs', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('FAQ를 불러오는 데 실패했습니다.');
+        }
+
+        const data: FAQItem[] = await response.json();
+        setFaqs(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFAQs();
+  }, []);
+
   return (
     <div className="p-4">
       <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">FAQ</h2>
-      <div className="space-y-4">
-        <details className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <summary className="cursor-pointer text-md font-semibold text-gray-900 dark:text-white">
-            Q. 회원가입은 어떻게 하나요?
-          </summary>
-          <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-            상단 메뉴의 회원가입 버튼을 클릭하시고 양식에 맞춰 정보를 입력하시면 됩니다.
-          </p>
-        </details>
-        <details className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-          <summary className="cursor-pointer text-md font-semibold text-gray-900 dark:text-white">
-            Q. 비밀번호를 잊어버렸어요.
-          </summary>
-          <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">
-            로그인 페이지에서 "비밀번호 찾기" 링크를 통해 비밀번호를 재설정할 수 있습니다.
-          </p>
-        </details>
-      </div>
+
+      {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
+      {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
+
+      {/* FAQ 목록 */}
+      {!loading && !error && (
+        <div className="space-y-4">
+          {faqs.map((faq) => (
+            <details
+              key={faq.id}
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+            >
+              <summary className="cursor-pointer text-md font-semibold text-gray-900 dark:text-white">
+                {faq.question}
+              </summary>
+              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{faq.answer}</p>
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                작성일: {new Date(faq.createdAt).toLocaleString()} | 수정일:{' '}
+                {new Date(faq.updatedAt).toLocaleString()}
+              </div>
+            </details>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
