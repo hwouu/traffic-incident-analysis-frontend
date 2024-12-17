@@ -251,27 +251,36 @@ export default function DashboardContent() {
       </div>
 
       {/* Quick Access Cards */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {quickAccessCards.map((card) => (
           <Link
             key={card.title}
             href={card.link}
-            className="group flex h-auto flex-col rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:p-4"
+            className="group flex h-auto flex-row items-center rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:flex sm:h-[140px] sm:flex-row sm:items-start sm:p-5"
           >
-            {/* Card Header */}
-            <div className="mb-2 flex items-center justify-between">
-              <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1.5`}>
-                <card.icon className="h-4 w-4 text-white" />
-              </span>
-              <ChevronRight className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1" />
+            {/* Image Section */}
+            <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:mr-4 sm:h-20 sm:w-20">
+              <Image
+                src={card.image}
+                alt={card.title}
+                fill
+                className="object-cover transition-all group-hover:scale-105"
+              />
             </div>
 
-            {/* Card Content */}
-            <div className="flex flex-1 flex-col">
-              <h3 className="mb-1 text-sm font-semibold text-gray-800 dark:text-white">
+            {/* Content Section */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="mb-1 flex items-center justify-between sm:mb-2">
+                <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1 sm:p-1.5`}>
+                  <card.icon className="h-3 w-3 text-white sm:h-4 sm:w-4" />
+                </span>
+                <ChevronRight className="h-3 w-3 text-gray-400 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
+              </div>
+
+              <h3 className="text-xs font-semibold text-gray-800 dark:text-white sm:text-sm">
                 {card.title}
               </h3>
-              <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+              <p className="line-clamp-3 text-[10px] leading-tight text-gray-500 dark:text-gray-400 sm:line-clamp-2 sm:text-xs sm:leading-relaxed">
                 {card.description}
               </p>
             </div>
