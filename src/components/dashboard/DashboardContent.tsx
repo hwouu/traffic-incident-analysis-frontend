@@ -1,3 +1,4 @@
+// src/components/dashboard/DashboardContent.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -61,7 +62,7 @@ export default function DashboardContent() {
     minor: reports.filter((r) => r.accident_type.severity === '경미').length,
   };
 
-  // 월별 데이터 계산 (date 필드 기준)
+  // 월별 데이터 계산
   const monthlyData = reports.reduce(
     (acc, report) => {
       const month = new Date(report.date).getMonth();
@@ -83,7 +84,6 @@ export default function DashboardContent() {
       icon: MessageSquareText,
       link: '/dashboard/analysis/chat',
       bgColor: 'bg-blue-500',
-
       image: '/images/dashboard/menu-cards/chat.png',
     },
     {
@@ -92,7 +92,6 @@ export default function DashboardContent() {
       icon: FileText,
       link: '/dashboard/reports',
       bgColor: 'bg-amber-500',
-
       image: '/images/dashboard/menu-cards/reports.png',
     },
     {
@@ -101,7 +100,6 @@ export default function DashboardContent() {
       icon: BarChart3,
       link: '/dashboard/statistics',
       bgColor: 'bg-indigo-500',
-
       image: '/images/dashboard/menu-cards/statistics.png',
     },
     {
@@ -110,7 +108,6 @@ export default function DashboardContent() {
       icon: Car,
       link: '/dashboard/traffic',
       bgColor: 'bg-emerald-500',
-
       image: '/images/dashboard/menu-cards/traffic.png',
     },
     {
@@ -119,7 +116,6 @@ export default function DashboardContent() {
       icon: AlertTriangle,
       link: '/dashboard/accident',
       bgColor: 'bg-rose-500',
-
       image: '/images/dashboard/menu-cards/accident.png',
     },
     {
@@ -128,7 +124,6 @@ export default function DashboardContent() {
       icon: Users,
       link: '/dashboard/community',
       bgColor: 'bg-purple-500',
-
       image: '/images/dashboard/menu-cards/community.png',
     },
   ];
@@ -137,56 +132,55 @@ export default function DashboardContent() {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="space-y-8 p-8">
+    <div className="space-y-8 p-4 md:p-8">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 p-6 shadow-sm dark:from-amber-900/20 dark:to-amber-800/20">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 p-4 shadow-sm dark:from-amber-900/20 dark:to-amber-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-amber-600 dark:text-amber-400">총 사고 분석</p>
-              <p className="mt-2 text-3xl font-bold text-amber-700 dark:text-amber-300">
+              <p className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-300 md:text-3xl">
                 {stats.total}
               </p>
             </div>
-            <span className="rounded-lg bg-amber-500/10 p-2.5">
-              <Trophy className="h-6 w-6 text-amber-600" />
+            <span className="rounded-lg bg-amber-500/10 p-2 md:p-2.5">
+              <Trophy className="h-5 w-5 text-amber-600 md:h-6 md:w-6" />
             </span>
           </div>
         </div>
 
-        <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-6 shadow-sm dark:from-red-900/20 dark:to-red-800/20">
+        <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-4 shadow-sm dark:from-red-900/20 dark:to-red-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-red-600 dark:text-red-400">심각 사고</p>
-              <p className="mt-2 text-3xl font-bold text-red-700 dark:text-red-300">
+              <p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-300 md:text-3xl">
                 {stats.severe}
               </p>
             </div>
-            <span className="rounded-lg bg-red-500/10 p-2.5">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
+            <span className="rounded-lg bg-red-500/10 p-2 md:p-2.5">
+              <AlertTriangle className="h-5 w-5 text-red-600 md:h-6 md:w-6" />
             </span>
           </div>
         </div>
 
-        <div className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-6 shadow-sm dark:from-green-900/20 dark:to-green-800/20">
+        <div className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-4 shadow-sm dark:from-green-900/20 dark:to-green-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-green-600 dark:text-green-400">경미 사고</p>
-              <p className="mt-2 text-3xl font-bold text-green-700 dark:text-green-300">
+              <p className="mt-2 text-2xl font-bold text-green-700 dark:text-green-300 md:text-3xl">
                 {stats.minor}
               </p>
             </div>
-            <span className="rounded-lg bg-green-500/10 p-2.5">
-              <Car className="h-6 w-6 text-green-600" />
+            <span className="rounded-lg bg-green-500/10 p-2 md:p-2.5">
+              <Car className="h-5 w-5 text-green-600 md:h-6 md:w-6" />
             </span>
           </div>
         </div>
       </div>
-
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Chart Section */}
-        <div className="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800 md:p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold text-gray-800 dark:text-white">
               월별 사고 발생 현황
@@ -215,7 +209,7 @@ export default function DashboardContent() {
         </div>
 
         {/* Recent Analysis */}
-        <div className="rounded-xl bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800 md:p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold text-gray-800 dark:text-white">최근 분석</h3>
             <Link href="/dashboard/reports" className="text-sm text-primary hover:underline">
@@ -257,37 +251,36 @@ export default function DashboardContent() {
       </div>
 
       {/* Quick Access Cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {quickAccessCards.map((card) => (
           <Link
             key={card.title}
             href={card.link}
-            className="group flex h-[140px] items-start gap-4 rounded-xl bg-white p-5 shadow-sm transition-all hover:shadow-md dark:bg-gray-800"
+            className="group flex h-auto flex-row items-center rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:flex sm:h-[140px] sm:flex-row sm:items-start sm:p-5"
           >
-            {/* Left: Image Section */}
-            <div className="relative aspect-square h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg">
+            {/* Image Section */}
+            <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:mr-4 sm:h-20 sm:w-20">
               <Image
                 src={card.image}
                 alt={card.title}
-                width={96}
-                height={96}
-                className="h-full w-full object-cover transition-all group-hover:scale-105"
+                fill
+                className="object-cover transition-all group-hover:scale-105"
               />
             </div>
 
-            {/* Right: Content Section */}
-            <div className="flex h-full flex-1 flex-col">
-              <div className="mb-2 flex items-center justify-between">
-                <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1.5`}>
-                  <card.icon className="h-4 w-4 text-white" />
+            {/* Content Section */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="mb-1 flex items-center justify-between sm:mb-2">
+                <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1 sm:p-1.5`}>
+                  <card.icon className="h-3 w-3 text-white sm:h-4 sm:w-4" />
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1" />
+                <ChevronRight className="h-3 w-3 text-gray-400 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
               </div>
 
-              <h3 className="mb-1.5 text-sm font-semibold text-gray-800 dark:text-white">
+              <h3 className="text-xs font-semibold text-gray-800 dark:text-white sm:text-sm">
                 {card.title}
               </h3>
-              <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+              <p className="line-clamp-3 text-[10px] leading-tight text-gray-500 dark:text-gray-400 sm:line-clamp-2 sm:text-xs sm:leading-relaxed">
                 {card.description}
               </p>
             </div>
