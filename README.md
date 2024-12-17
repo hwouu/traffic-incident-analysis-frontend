@@ -74,6 +74,7 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
 
 # .env.production 파일 생성
 NEXT_PUBLIC_API_BASE_URL=https://www.hwouu.shop
+
 ```
 
 4. 개발 서버 실행:
