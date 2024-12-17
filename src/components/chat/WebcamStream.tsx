@@ -2,10 +2,8 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { Camera, StopCircle, Upload, Loader2, RefreshCcw } from 'lucide-react';
-import { getAuthToken, removeAuthToken } from '@/lib/utils/auth';
-import type { WebcamStreamProps, UploadResponse } from '@/types/webcam';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.hwouu.shop';
+import { getAuthToken } from '@/lib/utils/auth';
+import type { WebcamStreamProps } from '@/types/webcam';
 
 export default function WebcamStream({
   onError,
@@ -40,9 +38,7 @@ export default function WebcamStream({
       }
     } catch (error) {
       console.error('웹캠 초기화 오류:', error);
-      if (onError) {
-        onError('웹캠을 시작할 수 없습니다. 카메라 권한을 허용해주세요.');
-      }
+      onError?.('웹캠을 시작할 수 없습니다. 카메라 권한을 허용해주세요.');
     }
   };
 
@@ -68,7 +64,9 @@ export default function WebcamStream({
 
     setIsReviewing(false);
     chunksRef.current = [];
-    const mediaRecorder = new MediaRecorder(streamRef.current);
+    const mediaRecorder = new MediaRecorder(streamRef.current, {
+      mimeType: 'video/webm;codecs=vp9'
+    });
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
@@ -77,7 +75,7 @@ export default function WebcamStream({
     };
 
     mediaRecorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: 'video/mp4' });
+      const blob = new Blob(chunksRef.current, { type: 'video/webm' });
       setRecordedBlob(blob);
       setIsReviewing(true);
       if (videoRef.current) {
@@ -88,7 +86,7 @@ export default function WebcamStream({
     };
 
     mediaRecorderRef.current = mediaRecorder;
-    mediaRecorder.start(100);
+    mediaRecorder.start(1000);
     setIsRecording(true);
   };
 
@@ -113,7 +111,7 @@ export default function WebcamStream({
 
   const handleUpload = async () => {
     if (!recordedBlob) {
-      if (onError) onError('업로드할 영상이 없습니다.');
+      onError?.('업로드할 영상이 없습니다.');
       return;
     }
 
@@ -125,75 +123,20 @@ export default function WebcamStream({
         throw new Error('로그인이 필요합니다.');
       }
 
-      const formData = new FormData();
-      const fileName = `recording-${Date.now()}.mp4`;
-      formData.append('video', recordedBlob, fileName);
+      // 파일 이름 생성
+      const filename = `recording-${Date.now()}.webm`;
+      const file = new File([recordedBlob], filename, { type: 'video/webm' });
 
-      console.log('Starting upload process...');
-      console.log('File details:', {
-        name: fileName,
-        size: `${(recordedBlob.size / 1024 / 1024).toFixed(2)}MB`,
-        type: recordedBlob.type,
-      });
-
-      const response = await fetch(`${API_BASE_URL}/api/stream/upload`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      console.log('Server response status:', response.status);
-      console.log('Server response status text:', response.statusText);
-
-      const responseText = await response.text();
-      console.log('Raw server response:', responseText);
-
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-        console.log('Parsed response data:', responseData);
-      } catch (e) {
-        console.error('Failed to parse response as JSON:', responseText);
-        throw new Error('서버 응답을 처리할 수 없습니다.');
-      }
-
-      if (!response.ok) {
-        console.error('Upload failed with status:', response.status);
-        console.error('Error details:', responseData);
-
-        if (response.status === 401) {
-          removeAuthToken();
-          window.location.href = '/login';
-          throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
-        }
-
-        const errorMessage = responseData.error || responseData.message || '업로드에 실패했습니다.';
-        console.error('Error message:', errorMessage);
-        throw new Error(errorMessage);
-      }
-
-      console.log('Upload success:', responseData);
-
-      if (responseData.path && onUploadSuccess) {
-        onUploadSuccess(responseData.path);
+      if (onUploadSuccess) {
+        onUploadSuccess(URL.createObjectURL(file));
       }
 
       setRecordedBlob(null);
       setIsReviewing(false);
       initWebcam();
     } catch (error) {
-      console.error('Upload process error:', {
-        message: error instanceof Error ? error.message : '알 수 없는 오류',
-        error: error,
-      });
-
-      if (onError) {
-        const errorMessage =
-          error instanceof Error ? error.message : '영상 업로드 중 오류가 발생했습니다.';
-        onError(errorMessage);
-      }
+      console.error('Upload error:', error);
+      onError?.(error instanceof Error ? error.message : '영상 업로드 중 오류가 발생했습니다.');
     } finally {
       setIsUploading(false);
     }
@@ -205,7 +148,7 @@ export default function WebcamStream({
         <video
           ref={videoRef}
           autoPlay
-          playsInline // 모바일에서 전체화면 방지
+          playsInline
           muted={!isReviewing}
           controls={isReviewing}
           className="h-full w-full rounded-lg bg-black object-cover"
