@@ -24,9 +24,6 @@ export default function DashboardSidebar() {
   const { user, isLoading } = useAuth();
   const pathname = usePathname();
 
-  console.log('User Info:', user);
-  console.log('Is Loading:', isLoading);
-  console.log('Is Collapsed:', isCollapsed);
 
   const menuItems = [
     {
