@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getAuthToken } from '@/lib/utils/auth';
+import { FaEdit, FaTrashAlt, FaPlusCircle,FaPaperPlane, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
 
 
@@ -11,9 +12,6 @@ interface Notice {
   createdAt: string;
   updatedAt: string;
 }
-
-
-
 function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -140,9 +138,9 @@ function NoticeBoard() {
         {!isCreating && (
           <button
             onClick={() => setIsCreating(true)}
-            className="rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+            className="flex items-center rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
           >
-            공지사항 작성
+            <FaPlusCircle className="mr-2" /> 공지사항 작성
           </button>
         )}
       </div>
@@ -166,12 +164,12 @@ function NoticeBoard() {
             value={newNotice.content}
             onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
           />
-          <div className="mt-2 space-x-2">
+          <div className="mt-2 flex space-x-2">
             <button
               onClick={handleCreateOrUpdate}
-              className="rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+              className="flex items-center rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
             >
-              {editingNotice ? '수정하기' : '작성하기'}
+              <FaEdit className="mr-2" /> {editingNotice ? '수정하기' : '작성하기'}
             </button>
             <button
               onClick={handleCancel}
@@ -188,24 +186,24 @@ function NoticeBoard() {
           {!loading && notices.map((notice) => (
             <div
               key={notice.id}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-md hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-md font-semibold text-gray-900 dark:text-white">
                   {notice.title}
                 </h3>
-                <div className="space-x-2">
+                <div className="flex space-x-2">
                   <button
                     onClick={() => handleEdit(notice)}
-                    className="rounded bg-yellow-500 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-800"
+                    className="flex items-center rounded bg-yellow-500 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-800"
                   >
-                    수정
+                    <FaEdit className="mr-1" /> 수정
                   </button>
                   <button
                     onClick={() => handleDelete(notice.id)}
-                    className="rounded bg-red-500 px-3 py-1 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                    className="flex items-center rounded bg-red-500 px-3 py-1 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
                   >
-                    삭제
+                    <FaTrashAlt className="mr-1" /> 삭제
                   </button>
                 </div>
               </div>
@@ -266,17 +264,17 @@ function OneToOneInquiry() {
 
   return (
     <div className="p-4">
-      <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
         <input
           type="email"
-          className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           placeholder="답장을 받을 이메일 주소를 입력하세요."
           value={userEmail}
           onChange={(e) => setUserEmail(e.target.value)}
         />
         <textarea
-          className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           rows={4}
           placeholder="문의 내용을 입력하세요."
           value={message}
@@ -285,19 +283,30 @@ function OneToOneInquiry() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`mt-2 rounded px-4 py-2 text-sm font-semibold text-white shadow ${
+          className={`flex items-center justify-center rounded-lg px-5 py-2 text-sm font-semibold shadow-md transition-all duration-300 focus:ring-2 focus:ring-offset-2 ${
             loading
-              ? 'bg-gray-400'
-              : 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800'
+              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800'
           }`}
         >
+          <FaPaperPlane className="mr-2" />
           {loading ? '전송 중...' : '제출하기'}
         </button>
-        {success && <p className="mt-2 text-sm text-green-600">{success}</p>}
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+
+        {success && (
+          <div className="mt-4 flex items-center rounded-lg bg-green-100 p-4 text-sm text-green-700 dark:bg-green-800 dark:text-green-100">
+            <FaCheckCircle className="mr-2" /> {success}
+          </div>
+        )}
+        {error && (
+          <div className="mt-4 flex items-center rounded-lg bg-red-100 p-4 text-sm text-red-700 dark:bg-red-800 dark:text-red-100">
+            <FaExclamationCircle className="mr-2" /> {error}
+          </div>
+        )}
       </div>
     </div>
   );
+  
 }
 
 interface FAQItem {
