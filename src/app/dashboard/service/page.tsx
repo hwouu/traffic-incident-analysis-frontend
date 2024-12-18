@@ -88,6 +88,11 @@ function OneToOneInquiry() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const serviceId = process.env.NEXT_PUBLIC_SERVICE_ID;
+  const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;
+  const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
+
+
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
@@ -101,10 +106,10 @@ function OneToOneInquiry() {
 
     try {
       await emailjs.send(
-        'service_vboh3ve',    // EmailJS에서 발급받은 서비스 ID
-        'template_q4og6aj',   // EmailJS에서 발급받은 템플릿 ID
+        serviceId || "",    // EmailJS에서 발급받은 서비스 ID
+        templateId || "",   // EmailJS에서 발급받은 템플릿 ID
         templateParams,       // 템플릿에 전달할 변수
-        'c85MkviZTlG0FIk9V'     // EmailJS에서 발급받은 Public Key (User ID)
+        publicKey     // EmailJS에서 발급받은 Public Key (User ID)
       );
 
       setSuccess('메일이 성공적으로 전송되었습니다.');
