@@ -24,43 +24,43 @@ export default function DashboardSidebar() {
  const { user, isLoading } = useAuth();
  const pathname = usePathname();
 
- const menuItems = [
-   {
-     name: '대시보드',
-     icon: LayoutDashboard,
-     path: '/dashboard',
-   },
-   {
-     name: '사고 분석',
-     icon: MessageSquareText,
-     path: '/dashboard/analysis/chat',
-   },
-   {
-     name: '보고서',
-     icon: FileText,
-     path: '/dashboard/reports',
-   },
-   {
-     name: '통계',
-     icon: BarChart3,
-     path: '/dashboard/statistics',
-   },
-   {
-     name: '실시간 교통',
-     icon: Car,
-     path: '/dashboard/traffic',
-   },
-   {
-     name: '사고 현황',
-     icon: Globe,
-     path: '/dashboard/accident',
-   },
-   {
-     name: '커뮤니티',
-     icon: Users,
-     path: '/dashboard/community',
-   },
- ];
+  const menuItems = [
+    {
+      name: '대시보드',
+      icon: LayoutDashboard,
+      path: '/dashboard',
+    },
+    {
+      name: '사고 분석',
+      icon: MessageSquareText,
+      path: '/dashboard/analysis/chat',
+    },
+    {
+      name: '보고서',
+      icon: FileText,
+      path: '/dashboard/reports',
+    },
+    {
+      name: '통계',
+      icon: BarChart3,
+      path: '/dashboard/statistics',
+    },
+    {
+      name: '실시간 교통',
+      icon: Car,
+      path: '/dashboard/traffic',
+    },
+    {
+      name: '사고 현황',
+      icon: Globe,
+      path: '/dashboard/accident',
+    },
+    {
+      name: '고객 지원',
+      icon: Users,
+      path: '/dashboard/service',
+    },
+  ];
 
  const handleLogout = async () => {
    try {
