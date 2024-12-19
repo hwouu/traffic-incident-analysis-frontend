@@ -1,17 +1,17 @@
 // src/components/reports/ReportList.tsx
-import { Report } from '@/types/report';
+import { Report, ReportListProps, SortField } from '@/types/report';
 import { format } from 'date-fns';
-import { Car, MapPin, Trash2, AlertCircle } from 'lucide-react';
+import { Car, MapPin, Trash2, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
 import { generateReportTitle, getStatusBadge } from '@/lib/utils/report';
 import { useState } from 'react';
 
-interface ReportListProps {
-  reports: Report[];
-  onSelectReport: (report: Report) => void;
-  onDeleteReport?: (report: Report) => void;
-}
-
-export default function ReportList({ reports, onSelectReport, onDeleteReport }: ReportListProps) {
+export default function ReportList({
+  reports,
+  onSelectReport,
+  onDeleteReport,
+  sortConfig,
+  onSort,
+}: ReportListProps) {
   const [reportToDelete, setReportToDelete] = useState<Report | null>(null);
 
   const handleDeleteClick = (e: React.MouseEvent, report: Report) => {
@@ -40,6 +40,12 @@ export default function ReportList({ reports, onSelectReport, onDeleteReport }: 
     );
   }
 
+  // 정렬 아이콘 표시 함수
+  const renderSortIcon = (field: SortField) => {
+    if (sortConfig?.field !== field) return null;
+    return sortConfig.order === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />;
+  };
+
   return (
     <>
       <div className="rounded-lg bg-white shadow-sm dark:bg-gray-800">
@@ -47,23 +53,38 @@ export default function ReportList({ reports, onSelectReport, onDeleteReport }: 
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  보고서 ID
+                <th
+                  className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={() => onSort && onSort('report_id' as SortField)}
+                >
+                  보고서 ID {renderSortIcon('report_id' as SortField)}
                 </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  제목
+                <th
+                  className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={() => onSort && onSort('date')}
+                >
+                  제목 {renderSortIcon('date')}
                 </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  발생일
+                <th
+                  className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={() => onSort && onSort('date')}
+                >
+                  발생일 {renderSortIcon('date')}
                 </th>
                 <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   차량
                 </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  발생 위치
+                <th
+                  className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={() => onSort && onSort('location')}
+                >
+                  발생 위치 {renderSortIcon('location')}
                 </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  심각도
+                <th
+                  className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={() => onSort && onSort('severity')}
+                >
+                  심각도 {renderSortIcon('severity')}
                 </th>
                 {onDeleteReport && (
                   <th className="whitespace-nowrap px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
@@ -74,7 +95,7 @@ export default function ReportList({ reports, onSelectReport, onDeleteReport }: 
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {reports.map((report) => (
-                <tr 
+                <tr
                   key={report.report_id}
                   className="group cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-gray-700"
                   onClick={() => onSelectReport(report)}
@@ -127,13 +148,13 @@ export default function ReportList({ reports, onSelectReport, onDeleteReport }: 
 
       {/* 삭제 확인 모달 */}
       {reportToDelete && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" 
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
           onClick={handleCancelDelete}
         >
-          <div 
-            className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-800" 
-            onClick={e => e.stopPropagation()}
+          <div
+            className="w-full max-w-md rounded-lg bg-white p-6 dark:bg-gray-800"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-center gap-2 text-red-500">
               <AlertCircle className="h-6 w-6" />
