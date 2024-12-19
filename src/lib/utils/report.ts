@@ -3,7 +3,7 @@
 import { Report } from '@/types/report';
 
 export const generateReportTitle = (report: Report): string => {
-  const location = report.location.split(' ')[0];  // 첫 번째 행정구역만 사용
+  const location = report.location.split(' ')[1];  // 첫 번째 행정구역만 사용
   const accidentType = report.accident_type.type;
   const severity = report.accident_type.severity;
   
