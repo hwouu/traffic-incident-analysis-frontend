@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getAuthToken } from '@/lib/utils/auth';
+import { FaEdit, FaTrashAlt, FaPlusCircle,FaPaperPlane, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
 
 
@@ -11,62 +12,201 @@ interface Notice {
   createdAt: string;
   updatedAt: string;
 }
-
 function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingNotice, setEditingNotice] = useState<Notice | null>(null);
+  const [newNotice, setNewNotice] = useState({ title: '', content: '' });
+  const [isCreating, setIsCreating] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const token = getAuthToken();
-        if (!token) {
-          throw new Error('인증 토큰이 없습니다. 다시 로그인해주세요.');
-        }
+  const fetchNotices = async () => {
+    const token = getAuthToken();
+    if (!token) {
+        alert('Access Token이 필요합니다. 다시 로그인해주세요.');
+        return;
+    }
 
+    try {
         const response = await fetch('https://www.hwouu.shop/api/notices', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
         });
 
         if (!response.ok) {
-          throw new Error('공지사항을 불러오는 데 실패했습니다.');
+            const data = await response.json();
+            throw new Error(data.message || '공지사항을 불러오는 데 실패했습니다.');
         }
 
         const data: Notice[] = await response.json();
         setNotices(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
+    } catch (err) {
+        alert((err as Error).message);
+    } finally {
         setLoading(false);
-      }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchNotices();
   }, []);
 
+  const handleCreateOrUpdate = async () => {
+    const token = getAuthToken();
+    if (!token) {
+      alert('인증 토큰이 없습니다. 다시 로그인해주세요.');
+      return;
+    }
+
+    const url = editingNotice
+      ? `https://www.hwouu.shop/api/notices/${editingNotice.id}`
+      : 'https://www.hwouu.shop/api/notices';
+
+    const method = editingNotice ? 'PUT' : 'POST';
+    const body = JSON.stringify(newNotice);
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || '공지사항 작성/수정에 실패했습니다.');
+      }
+
+      setNewNotice({ title: '', content: '' });
+      setEditingNotice(null);
+      setIsCreating(false);
+      fetchNotices();
+    } catch (err) {
+      alert((err as Error).message);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    const token = getAuthToken();
+    if (!token) {
+      alert('인증 토큰이 없습니다. 다시 로그인해주세요.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://www.hwouu.shop/api/notices/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || '공지사항 삭제에 실패했습니다.');
+      }
+
+      fetchNotices();
+    } catch (err) {
+      alert((err as Error).message);
+    }
+  };
+
+  const handleEdit = (notice: Notice) => {
+    setEditingNotice(notice);
+    setNewNotice({ title: notice.title, content: notice.content });
+    setIsCreating(true);
+  };
+
+  const handleCancel = () => {
+    setEditingNotice(null);
+    setNewNotice({ title: '', content: '' });
+    setIsCreating(false);
+  };
+
   return (
     <div className="p-4">
-      <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">공지사항 게시판</h2>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">공지사항 게시판</h2>
+        {!isCreating && (
+          <button
+            onClick={() => setIsCreating(true)}
+            className="flex items-center rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+          >
+            <FaPlusCircle className="mr-2" /> 공지사항 작성
+          </button>
+        )}
+      </div>
 
-      {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
-      {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
+      {isCreating ? (
+        <div className="mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+          <h3 className="text-md font-semibold text-gray-900 dark:text-white">
+            {editingNotice ? '공지사항 수정' : '공지사항 작성'}
+          </h3>
+          <input
+            type="text"
+            className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            placeholder="제목을 입력하세요."
+            value={newNotice.title}
+            onChange={(e) => setNewNotice({ ...newNotice, title: e.target.value })}
+          />
+          <textarea
+            className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            rows={4}
+            placeholder="내용을 입력하세요."
+            value={newNotice.content}
+            onChange={(e) => setNewNotice({ ...newNotice, content: e.target.value })}
+          />
+          <div className="mt-2 flex space-x-2">
+            <button
+              onClick={handleCreateOrUpdate}
+              className="flex items-center rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+            >
+              <FaEdit className="mr-2" /> {editingNotice ? '수정하기' : '작성하기'}
+            </button>
+            <button
+              onClick={handleCancel}
+              className="rounded bg-gray-400 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div>
+          {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
 
-      {/* 공지사항 목록 */}
-      {!loading && !error && (
-        <div className="space-y-4">
-          {notices.map((notice) => (
+          {!loading && notices.map((notice) => (
             <div
               key={notice.id}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+              className="rounded-lg border border-gray-200 bg-white p-4 shadow-md hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
             >
-              <h3 className="text-md font-semibold text-gray-900 dark:text-white">
-                {notice.title}
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-md font-semibold text-gray-900 dark:text-white">
+                  {notice.title}
+                </h3>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEdit(notice)}
+                    className="flex items-center rounded bg-yellow-500 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-800"
+                  >
+                    <FaEdit className="mr-1" /> 수정
+                  </button>
+                  <button
+                    onClick={() => handleDelete(notice.id)}
+                    className="flex items-center rounded bg-red-500 px-3 py-1 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                  >
+                    <FaTrashAlt className="mr-1" /> 삭제
+                  </button>
+                </div>
+              </div>
               <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{notice.content}</p>
               <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 작성일: {new Date(notice.createdAt).toLocaleString()} | 수정일:{' '}
@@ -79,7 +219,6 @@ function NoticeBoard() {
     </div>
   );
 }
-
 
 function OneToOneInquiry() {
   const [userEmail, setUserEmail] = useState('');
@@ -125,17 +264,17 @@ function OneToOneInquiry() {
 
   return (
     <div className="p-4">
-      <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
-      <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
+      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
         <input
           type="email"
-          className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           placeholder="답장을 받을 이메일 주소를 입력하세요."
           value={userEmail}
           onChange={(e) => setUserEmail(e.target.value)}
         />
         <textarea
-          className="mt-2 w-full rounded border border-gray-300 p-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+          className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
           rows={4}
           placeholder="문의 내용을 입력하세요."
           value={message}
@@ -144,19 +283,30 @@ function OneToOneInquiry() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className={`mt-2 rounded px-4 py-2 text-sm font-semibold text-white shadow ${
+          className={`flex items-center justify-center rounded-lg px-5 py-2 text-sm font-semibold shadow-md transition-all duration-300 focus:ring-2 focus:ring-offset-2 ${
             loading
-              ? 'bg-gray-400'
-              : 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800'
+              ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+              : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800'
           }`}
         >
+          <FaPaperPlane className="mr-2" />
           {loading ? '전송 중...' : '제출하기'}
         </button>
-        {success && <p className="mt-2 text-sm text-green-600">{success}</p>}
-        {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+
+        {success && (
+          <div className="mt-4 flex items-center rounded-lg bg-green-100 p-4 text-sm text-green-700 dark:bg-green-800 dark:text-green-100">
+            <FaCheckCircle className="mr-2" /> {success}
+          </div>
+        )}
+        {error && (
+          <div className="mt-4 flex items-center rounded-lg bg-red-100 p-4 text-sm text-red-700 dark:bg-red-800 dark:text-red-100">
+            <FaExclamationCircle className="mr-2" /> {error}
+          </div>
+        )}
       </div>
     </div>
   );
+  
 }
 
 interface FAQItem {
