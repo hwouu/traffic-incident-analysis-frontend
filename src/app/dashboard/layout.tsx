@@ -30,7 +30,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <DashboardHeader />
         <div className="relative flex flex-1">
           <DashboardSidebar />
-          <main className="flex-1 overflow-y-auto">{children}</main>
+          <main className="flex-1 overflow-hidden">
+            {/* 자식 컴포넌트 내부에서 스크롤 처리 */}
+            {children}
+          </main>
         </div>
       </div>
     </DashboardProvider>

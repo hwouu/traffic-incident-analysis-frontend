@@ -16,7 +16,7 @@ import { title } from 'process';
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
   const [showSecondTitle, setShowSecondTitle] = useState(false);
-  const { theme } = useTheme(); 
+  const { theme } = useTheme();
   const backgroundSrc = getBackgroundImage('mobile');
 
   // useEffect only runs on the client, so now we can safely show the UI
@@ -47,17 +47,17 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [title]); 
+  }, [title]);
 
-   // 렌더링 전에 mounted가 false라면 아무것도 렌더링하지 않음
-   if (!mounted) {
+  // 렌더링 전에 mounted가 false라면 아무것도 렌더링하지 않음
+  if (!mounted) {
     return null;
   }
 
   return (
     <div className="flex min-h-screen bg-transparent dark:bg-dark-background">
       {/* Left Section - SVG Slider */}
-      <div className="hidden w-1/2 bg-primary/10 lg:block dark:#0F3134">
+      <div className="dark:#0F3134 hidden w-1/2 bg-primary/10 lg:block">
         {/* 왼쪽 상단에 로고 추가 */}
         <div className="absolute left-6 top-6 z-50">
           <GreenBGLogo variant="with-text" size="xl" />
@@ -80,31 +80,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <SwiperSlide key={index}>
               <div className="flex h-full flex-col items-center justify-center p-8">
                 <div className="relative h-96 w-96">
-                  <Image
-                    src={slide.image}
-                    alt={slide.title}
-                    fill
-                    className="object-contain"
-                  />
+                  <Image src={slide.image} alt={slide.title} fill className="object-contain" />
                 </div>
                 <h2 className="mt-8 text-2xl font-bold text-gray-900 dark:text-white">
-                <span>{slide.title}</span>
+                  <span>{slide.title}</span>
                   {slide.secondTitle && (
-                      <span 
-                        className={`
-                          ml-2 text-primary
-                          transition-all duration-500
-                          text-[#10B981] 
-                          dark:text-[#F6FCDF]  
-                          ${showSecondTitle 
-                            ? 'opacity-100 transform translate-x-0' 
-                            : 'opacity-0 transform -translate-x-4'
-                          }
-                        `}
-                      >
-                        {slide.secondTitle}
-                      </span>
-                    )}
+                    <span
+                      className={`ml-2 text-[#10B981] text-primary transition-all duration-500 dark:text-[#F6FCDF] ${
+                        showSecondTitle
+                          ? 'translate-x-0 transform opacity-100'
+                          : '-translate-x-4 transform opacity-0'
+                      } `}
+                    >
+                      {slide.secondTitle}
+                    </span>
+                  )}
                 </h2>
               </div>
             </SwiperSlide>
@@ -113,28 +103,27 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       <div className="relative flex w-full flex-col lg:w-1/2">
-          {/* 배경 이미지 */}
-     
+        {/* 배경 이미지 */}
+
         <Image
           src={backgroundSrc} // 배경 이미지 경로
           alt="Login Section Background"
           fill
           className="absolute inset-0 object-cover opacity-70 dark:opacity-50"
-         />
-       
-        <div className="absolute right-0 top-0 z-5 flex h-20 w-full items-center justify-end px-6">
-            <ThemeToggle />
+        />
+
+        <div className="z-5 absolute right-0 top-0 flex h-20 w-full items-center justify-end px-6">
+          <ThemeToggle />
         </div>
 
-        <div className="flex z-5 min-h-screen w-full items-center justify-center bg-white px-6 transition-colors dark:bg-transparent">
-            <div className="relative w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
-              <div className="mb-8 flex justify-center lg:hidden">
-                <Logo variant="with-text" size="xl" />
-              </div>
-              {children}
+        <div className="z-5 flex min-h-screen w-full items-center justify-center bg-white px-6 transition-colors dark:bg-transparent">
+          <div className="relative w-full max-w-md rounded-xl bg-white p-8 shadow-lg transition-colors dark:bg-gray-800/50">
+            <div className="mb-8 flex justify-center lg:hidden">
+              <Logo variant="with-text" size="xl" />
             </div>
+            {children}
+          </div>
         </div>
-
       </div>
     </div>
   );

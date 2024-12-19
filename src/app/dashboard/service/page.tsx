@@ -1,9 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getAuthToken } from '@/lib/utils/auth';
-import { FaEdit, FaTrashAlt, FaPlusCircle,FaPaperPlane, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaPlusCircle, FaPaperPlane, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
-
 
 interface Notice {
   id: number;
@@ -12,6 +11,7 @@ interface Notice {
   createdAt: string;
   updatedAt: string;
 }
+
 function NoticeBoard() {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -23,30 +23,30 @@ function NoticeBoard() {
   const fetchNotices = async () => {
     const token = getAuthToken();
     if (!token) {
-        alert('Access Token이 필요합니다. 다시 로그인해주세요.');
-        return;
+      alert('Access Token이 필요합니다. 다시 로그인해주세요.');
+      return;
     }
 
     try {
-        const response = await fetch('https://www.hwouu.shop/api/notices', {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-        });
+      const response = await fetch('https://www.hwouu.shop/api/notices', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
 
-        if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.message || '공지사항을 불러오는 데 실패했습니다.');
-        }
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || '공지사항을 불러오는 데 실패했습니다.');
+      }
 
-        const data: Notice[] = await response.json();
-        setNotices(data);
+      const data: Notice[] = await response.json();
+      setNotices(data);
     } catch (err) {
-        alert((err as Error).message);
+      alert((err as Error).message);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -132,15 +132,15 @@ function NoticeBoard() {
   };
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col h-full p-2 md:p-4">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">공지사항 게시판</h2>
         {!isCreating && (
           <button
             onClick={() => setIsCreating(true)}
-            className="flex items-center rounded bg-blue-500 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+            className="flex items-center rounded bg-blue-500 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
           >
-            <FaPlusCircle className="mr-2" /> 공지사항 작성
+            <FaPlusCircle className="mr-1" /> 공지사항 작성
           </button>
         )}
       </div>
@@ -167,53 +167,57 @@ function NoticeBoard() {
           <div className="mt-2 flex space-x-2">
             <button
               onClick={handleCreateOrUpdate}
-              className="flex items-center rounded bg-green-500 px-4 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
+              className="flex items-center rounded bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-600 dark:bg-green-700 dark:hover:bg-green-800"
             >
-              <FaEdit className="mr-2" /> {editingNotice ? '수정하기' : '작성하기'}
+              <FaEdit className="mr-1" /> {editingNotice ? '수정하기' : '작성하기'}
             </button>
             <button
               onClick={handleCancel}
-              className="rounded bg-gray-400 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
+              className="rounded bg-gray-400 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700"
             >
               취소
             </button>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="flex-1 overflow-y-auto">
           {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
 
-          {!loading && notices.map((notice) => (
-            <div
-              key={notice.id}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-md hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-md font-semibold text-gray-900 dark:text-white">
-                  {notice.title}
-                </h3>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(notice)}
-                    className="flex items-center rounded bg-yellow-500 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-800"
-                  >
-                    <FaEdit className="mr-1" /> 수정
-                  </button>
-                  <button
-                    onClick={() => handleDelete(notice.id)}
-                    className="flex items-center rounded bg-red-500 px-3 py-1 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
-                  >
-                    <FaTrashAlt className="mr-1" /> 삭제
-                  </button>
+          {!loading && (
+            <div className="space-y-4">
+              {notices.map((notice) => (
+                <div
+                  key={notice.id}
+                  className="rounded-lg border border-gray-200 bg-white p-4 shadow-md hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-md font-semibold text-gray-900 dark:text-white">
+                      {notice.title}
+                    </h3>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleEdit(notice)}
+                        className="flex items-center rounded bg-yellow-500 px-3 py-1 text-sm font-semibold text-white hover:bg-yellow-600 dark:bg-yellow-700 dark:hover:bg-yellow-800"
+                      >
+                        <FaEdit className="mr-1" /> 수정
+                      </button>
+                      <button
+                        onClick={() => handleDelete(notice.id)}
+                        className="flex items-center rounded bg-red-500 px-3 py-1 text-sm font-semibold text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                      >
+                        <FaTrashAlt className="mr-1" /> 삭제
+                      </button>
+                    </div>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{notice.content}</p>
+                  <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    작성일: {new Date(notice.createdAt).toLocaleString()} | 수정일:{' '}
+                    {new Date(notice.updatedAt).toLocaleString()}
+                  </div>
                 </div>
-              </div>
-              <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">{notice.content}</p>
-              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                작성일: {new Date(notice.createdAt).toLocaleString()} | 수정일:{' '}
-                {new Date(notice.updatedAt).toLocaleString()}
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
@@ -231,7 +235,6 @@ function OneToOneInquiry() {
   const templateId = process.env.NEXT_PUBLIC_TEMPLATE_ID;
   const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
 
-
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
@@ -247,8 +250,8 @@ function OneToOneInquiry() {
       await emailjs.send(
         serviceId || "",    // EmailJS에서 발급받은 서비스 ID
         templateId || "",   // EmailJS에서 발급받은 템플릿 ID
-        templateParams,       // 템플릿에 전달할 변수
-        publicKey     // EmailJS에서 발급받은 Public Key (User ID)
+        templateParams,     // 템플릿에 전달할 변수
+        publicKey           // EmailJS에서 발급받은 Public Key (User ID)
       );
 
       setSuccess('메일이 성공적으로 전송되었습니다.');
@@ -263,9 +266,9 @@ function OneToOneInquiry() {
   };
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col h-full p-2 md:p-4">
       <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">1:1 문의</h2>
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800">
+      <div className="flex-1 rounded-lg border border-gray-200 bg-white p-4 shadow-md dark:border-gray-700 dark:bg-gray-800">
         <input
           type="email"
           className="mb-4 w-full rounded-lg border border-gray-300 p-3 text-sm text-gray-900 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
@@ -306,7 +309,6 @@ function OneToOneInquiry() {
       </div>
     </div>
   );
-  
 }
 
 interface FAQItem {
@@ -355,7 +357,7 @@ function FAQ() {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col h-full p-2 md:p-4">
       <h2 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">FAQ</h2>
 
       {loading && <p className="text-gray-600 dark:text-gray-300">불러오는 중...</p>}
@@ -363,7 +365,7 @@ function FAQ() {
 
       {/* FAQ 목록 */}
       {!loading && !error && (
-        <div className="space-y-4">
+        <div className="flex-1 overflow-y-auto space-y-4 p-2">
           {faqs.map((faq) => (
             <details
               key={faq.id}
@@ -389,7 +391,7 @@ export default function Page() {
   const [activeTab, setActiveTab] = useState('notice');
 
   return (
-    <div className="flex h-[calc(100vh-3.5rem)] flex-col p-4 md:p-6">
+    <div className="flex flex-col h-full p-2 md:p-4">
       {/* 첫 번째 줄: 고객지원 센터 제목 */}
       <div className="mb-2">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white md:text-2xl">고객지원</h1>
