@@ -15,6 +15,7 @@ import {
   TrafficCone, // 'TrafficCone' 아이콘 추가
   Cctv,
   Users,
+  Megaphone
 } from 'lucide-react';
 import { logout } from '@/lib/auth/auth';
 import { useDashboard } from '@/context/DashboardContext';
@@ -70,7 +71,7 @@ export default function DashboardSidebar() {
     },
     {
       name: '고객 지원',
-      icon: Users,
+      icon: Megaphone,
       path: '/dashboard/service',
     },
     // 관리자 메뉴 추가

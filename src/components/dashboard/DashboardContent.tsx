@@ -13,8 +13,9 @@ import {
   ChevronRight,
   Trophy,
   Clock,
-  TrafficCone, // 'TrafficCone' 아이콘 추가
-  Cctv,        // 'Cctv' 아이콘 추가
+  TrafficCone, 
+  Cctv,        
+  Megaphone,   
 } from 'lucide-react';
 import {
   LineChart,
@@ -128,7 +129,7 @@ export default function DashboardContent() {
     {
       title: '고객 지원',
       description: '공지사항, 1:1 문의, FAQ',
-      icon: Users,
+      icon: Megaphone,
       link: '/dashboard/community',
       bgColor: 'bg-purple-500',
       image: '/images/dashboard/menu-cards/community.png',
