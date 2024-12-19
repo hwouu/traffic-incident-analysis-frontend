@@ -31,14 +31,14 @@ export function WelcomeSlide() {
 
   const slides = [
     {
-      title: '교통사고 분석 시스템',
+      title: '교통사고 분석 시스템:',
       secondTitle: '사고탐정',
-      description: '인공지능 기반의 실시간 교통사고 분석과 신고 시스템을 경험해보세요.',
+      description: '인공지능 기반의 실시간 교통사고 분석 시스템을 경험해보세요.',
       image: theme === 'dark' ? '/images/logo-dark-main.svg' : '/images/logo-light-main.svg',
     },
     {
       title: '신속한 사고 대응',
-      description: '사고 발생 시 빠른 분석과 보고서 생성으로 신속한 대응이 가능합니다.',
+      description: '사고 발생 시 정확한 분석과 보고서 생성으로 세밀한 사고 파악이 가능합니다.',
       image: '/images/slides/slide2.svg',
     },
     {
