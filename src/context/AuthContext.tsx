@@ -24,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setIsLoading(true);
         const currentUser = await getCurrentUser();
-        console.log('Current user:', currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error('Auth initialization error:', error);
