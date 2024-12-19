@@ -29,10 +29,10 @@ export default function DashboardSidebar() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -97,21 +97,21 @@ export default function DashboardSidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 z-50 flex h-[calc(100vh-4rem)] flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 md:relative md:z-30 ${
-          isCollapsed ? 'md:w-20 w-64' : 'w-64'
+        className={`fixed left-0 top-16 z-50 flex h-[calc(100vh-4rem)] flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 md:sticky ${
+          isCollapsed ? 'w-64 md:w-20' : 'w-64'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         {/* User Profile Section */}
         {isLoading ? (
-          <div 
+          <div
             className={`flex flex-col border-b border-gray-200 dark:border-gray-700 ${
-              isCollapsed ? 'md:items-center md:p-4 p-6' : 'items-center p-6'
+              isCollapsed ? 'p-6 md:items-center md:p-4' : 'items-center p-6'
             }`}
           >
-            <div 
+            <div
               className={`animate-pulse rounded-full bg-gray-200 dark:bg-gray-700 ${
                 isCollapsed && !isMobile ? 'h-10 w-10' : 'h-20 w-20'
-              }`} 
+              }`}
             />
             {(!isCollapsed || isMobile) && (
               <div className="mt-4 w-full text-center">
@@ -123,7 +123,7 @@ export default function DashboardSidebar() {
         ) : (
           <div
             className={`flex flex-col border-b border-gray-200 dark:border-gray-700 ${
-              isCollapsed ? 'md:items-center md:p-4 p-6' : 'items-center p-6'
+              isCollapsed ? 'p-6 md:items-center md:p-4' : 'items-center p-6'
             }`}
           >
             <Image
@@ -156,13 +156,15 @@ export default function DashboardSidebar() {
                 e.stopPropagation();
                 setIsMobileOpen(false);
               }}
-              className={`group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors touch-action-manipulation ${
+              className={`touch-action-manipulation group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
                 pathname === item.path
                   ? 'bg-primary text-white'
                   : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
               }`}
             >
-              <item.icon className={`h-5 w-5 ${isCollapsed && !isMobile ? 'md:mx-auto mr-3' : 'mr-3'}`} />
+              <item.icon
+                className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
+              />
               {(!isCollapsed || isMobile) && <span>{item.name}</span>}
             </Link>
           ))}
@@ -172,9 +174,11 @@ export default function DashboardSidebar() {
         <div className="border-t border-gray-200 p-4 dark:border-gray-700">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800 touch-action-manipulation"
+            className="touch-action-manipulation flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
           >
-            <LogOut className={`h-5 w-5 ${isCollapsed && !isMobile ? 'md:mx-auto mr-3' : 'mr-3'}`} />
+            <LogOut
+              className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
+            />
             {(!isCollapsed || isMobile) && <span>로그아웃</span>}
           </button>
         </div>
