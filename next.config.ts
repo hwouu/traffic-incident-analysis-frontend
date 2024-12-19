@@ -3,7 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
   experimental: {
-    serverActions: true
+    serverActions: {
+      allowedOrigins: ['my-proxy.com', '*.my-proxy.com'],
+      bodySizeLimit: '2mb'
+    }
   },
   images: {
     remotePatterns: [{
