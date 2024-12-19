@@ -5,7 +5,17 @@
   ],
   "rules": {
     "no-unused-vars": "warn",
-    "no-console": "warn"
-  }
-  
+    "no-console": ["warn", { 
+      "allow": ["warn", "error", "info", "log"] 
+    }],
+    "react-hooks/exhaustive-deps": "warn",
+    "@next/next/no-img-element": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "out/",
+    "build/",
+    "dist/"
+  ]
 }

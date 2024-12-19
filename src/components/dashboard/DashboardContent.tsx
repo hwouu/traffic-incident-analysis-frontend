@@ -119,7 +119,7 @@ export default function DashboardContent() {
       image: '/images/dashboard/menu-cards/accident.png',
     },
     {
-      title: '커뮤니티',
+      title: '고객 지원',
       description: '공지사항, 1:1 문의, FAQ',
       icon: Users,
       link: '/dashboard/community',

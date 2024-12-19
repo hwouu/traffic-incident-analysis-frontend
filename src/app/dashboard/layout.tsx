@@ -7,19 +7,13 @@ import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardSidebar from '@/components/dashboard/DashboardSidebar';
 import { DashboardProvider } from '@/context/DashboardContext';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = () => {
       const cookies = document.cookie.split(';');
-      const hasAuthCookie = cookies.some(cookie => 
-        cookie.trim().startsWith('auth=')
-      );
+      const hasAuthCookie = cookies.some((cookie) => cookie.trim().startsWith('auth='));
 
       if (!hasAuthCookie) {
         console.log('No auth cookie found, redirecting to login');
@@ -34,11 +28,9 @@ export default function DashboardLayout({
     <DashboardProvider>
       <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
         <DashboardHeader />
-        <div className="flex flex-1">
+        <div className="relative flex flex-1">
           <DashboardSidebar />
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
+          <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </DashboardProvider>
