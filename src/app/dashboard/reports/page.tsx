@@ -1,3 +1,5 @@
+// src/app/dashboard/reports/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,9 +12,12 @@ import {
   ArrowDown,
   Search,
   MapPin,
-  Car,
   ChevronDown,
   X,
+  SlidersHorizontal,
+  Filter,
+  Calendar,
+  RefreshCw,
 } from 'lucide-react';
 import { Report } from '@/types/report';
 import ReportList from '@/components/reports/ReportList';
@@ -33,8 +38,8 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [sortField, setSortField] = useState<'date' | 'severity' | 'location'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
-  // 새로운 필터링 상태들
+  const [showFilters, setShowFilters] = useState(true);
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedSeverity, setSelectedSeverity] = useState('');
   const [showLocationFilter, setShowLocationFilter] = useState(false);

@@ -11,8 +11,8 @@ import {
   MessageSquareText,
   BarChart3,
   LogOut,
-  Car,
-  Globe,
+  TrafficCone, // 'TrafficCone' 아이콘 추가
+  Cctv,
   Users,
 } from 'lucide-react';
 import { logout } from '@/lib/auth/auth';
@@ -58,14 +58,14 @@ export default function DashboardSidebar() {
       path: '/dashboard/statistics',
     },
     {
-      name: '실시간 교통',
-      icon: Car,
-      path: '/dashboard/traffic',
+      name: '고속도로 교통 정보', // 이름 변경
+      icon: TrafficCone,         // 'TrafficCone' 아이콘으로 변경
+      path: 'https://www.roadplus.co.kr/main/main.do', // 외부 링크
     },
     {
-      name: '사고 현황',
-      icon: Globe,
-      path: '/dashboard/accident',
+      name: '실시간 CCTV',         // 이름 변경
+      icon: Cctv,             
+      path: 'https://www.utic.go.kr/map/map.do?menu=cctv', // 외부 링크
     },
     {
       name: '고객 지원',
@@ -83,6 +83,10 @@ export default function DashboardSidebar() {
       console.error('Logout failed:', error);
       alert('로그아웃 중 오류가 발생했습니다.');
     }
+  };
+
+  const isExternalLink = (url: string) => {
+    return /^https?:\/\//.test(url);
   };
 
   return (
@@ -148,26 +152,58 @@ export default function DashboardSidebar() {
 
         {/* Menu Items */}
         <nav className="flex-1 overflow-y-auto p-4">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              href={item.path}
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMobileOpen(false);
-              }}
-              className={`touch-action-manipulation group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
-                pathname === item.path
-                  ? 'bg-primary text-white'
-                  : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
-              }`}
-            >
-              <item.icon
-                className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
-              />
-              {(!isCollapsed || isMobile) && <span>{item.name}</span>}
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const external = isExternalLink(item.path);
+            const Icon = item.icon;
+            const isActive = pathname === item.path;
+
+            if (external) {
+              return (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`touch-action-manipulation group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-primary text-white'
+                      : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${
+                      isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
+                    }`}
+                  />
+                  {(!isCollapsed || isMobile) && <span>{item.name}</span>}
+                </a>
+              );
+            } else {
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMobileOpen(false);
+                  }}
+                  className={`touch-action-manipulation group mb-1 flex items-center rounded-lg p-3 text-sm font-medium transition-colors ${
+                    pathname === item.path
+                      ? 'bg-primary text-white'
+                      : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <Icon
+                    className={`h-5 w-5 ${
+                      isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
+                    }`}
+                  />
+                  {(!isCollapsed || isMobile) && <span>{item.name}</span>}
+                </Link>
+              );
+            }
+          })}
         </nav>
 
         {/* Logout Button */}
@@ -177,7 +213,9 @@ export default function DashboardSidebar() {
             className="touch-action-manipulation flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             <LogOut
-              className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
+              className={`h-5 w-5 ${
+                isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
+              }`}
             />
             {(!isCollapsed || isMobile) && <span>로그아웃</span>}
           </button>

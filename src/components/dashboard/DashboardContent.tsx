@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   MessageSquareText,
   FileText,
@@ -12,6 +13,8 @@ import {
   ChevronRight,
   Trophy,
   Clock,
+  TrafficCone, // 'TrafficCone' 아이콘 추가
+  Cctv,        // 'Cctv' 아이콘 추가
 } from 'lucide-react';
 import {
   LineChart,
@@ -23,7 +26,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Image from 'next/image';
-import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth/auth';
 import { reportsApi } from '@/lib/api/reports';
 import type { UserProfile } from '@/types/auth';
@@ -80,43 +82,48 @@ export default function DashboardContent() {
   const quickAccessCards = [
     {
       title: '사고 분석',
-      description: 'AI 기반 사고 분석 챗봇',
+      description: 'ChatGPT AI 기반 사고 분석 챗봇',
       icon: MessageSquareText,
       link: '/dashboard/analysis/chat',
       bgColor: 'bg-blue-500',
       image: '/images/dashboard/menu-cards/chat.png',
+      external: false, // 내부 링크
     },
     {
       title: '보고서',
-      description: '분석 보고서 조회 및 관리',
+      description: '분석된 보고서 조회 및 관리',
       icon: FileText,
       link: '/dashboard/reports',
       bgColor: 'bg-amber-500',
       image: '/images/dashboard/menu-cards/reports.png',
+      external: false, // 내부 링크
     },
     {
       title: '통계',
-      description: '보고서 기반 통계 확인',
+      description: '분석된 보고서 기반 통계 확인',
       icon: BarChart3,
       link: '/dashboard/statistics',
       bgColor: 'bg-indigo-500',
       image: '/images/dashboard/menu-cards/statistics.png',
+      external: false, // 내부 링크
     },
     {
-      title: '실시간 교통',
-      description: '도로교통공사 기반 실시간 교통 상황 확인',
-      icon: Car,
-      link: '/dashboard/traffic',
+      title: '고속도로 교통 정보', // 이름 변경
+      description: 'ROADPLUS 고속도로 교통 정보',
+      icon: TrafficCone, // 'TrafficCone' 아이콘으로 변경
+      link: 'https://www.roadplus.co.kr/main/main.do', // 외부 링크
       bgColor: 'bg-emerald-500',
       image: '/images/dashboard/menu-cards/traffic.png',
+      external: true, // 외부 링크
     },
     {
-      title: '사고 현황',
-      description: '전국 사고 현황 확인',
-      icon: AlertTriangle,
-      link: '/dashboard/accident',
+      title: '실시간 CCTV', // 이름 변경
+      description: 'UTIC 실시간 CCTV 확인',
+      icon: Cctv, // 'Cctv' 아이콘으로 변경
+      link: 'https://www.utic.go.kr/map/map.do?menu=cctv', // 외부 링크
       bgColor: 'bg-rose-500',
       image: '/images/dashboard/menu-cards/accident.png',
+      external: true, // 외부 링크
     },
     {
       title: '고객 지원',
@@ -125,10 +132,12 @@ export default function DashboardContent() {
       link: '/dashboard/community',
       bgColor: 'bg-purple-500',
       image: '/images/dashboard/menu-cards/community.png',
+      external: false, // 내부 링크
     },
   ];
 
-  if (loading) return <div className="flex h-full items-center justify-center">로딩 중...</div>;
+  if (loading)
+    return <div className="flex h-full items-center justify-center">로딩 중...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
@@ -138,7 +147,9 @@ export default function DashboardContent() {
         <div className="rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 p-4 shadow-sm dark:from-amber-900/20 dark:to-amber-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-amber-600 dark:text-amber-400">총 사고 분석</p>
+              <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                총 사고 분석
+              </p>
               <p className="mt-2 text-2xl font-bold text-amber-700 dark:text-amber-300 md:text-3xl">
                 {stats.total}
               </p>
@@ -152,7 +163,9 @@ export default function DashboardContent() {
         <div className="rounded-xl bg-gradient-to-br from-red-50 to-red-100 p-4 shadow-sm dark:from-red-900/20 dark:to-red-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-red-600 dark:text-red-400">심각 사고</p>
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                심각 사고
+              </p>
               <p className="mt-2 text-2xl font-bold text-red-700 dark:text-red-300 md:text-3xl">
                 {stats.severe}
               </p>
@@ -166,7 +179,9 @@ export default function DashboardContent() {
         <div className="rounded-xl bg-gradient-to-br from-green-50 to-green-100 p-4 shadow-sm dark:from-green-900/20 dark:to-green-800/20 md:p-6">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-sm font-medium text-green-600 dark:text-green-400">경미 사고</p>
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                경미 사고
+              </p>
               <p className="mt-2 text-2xl font-bold text-green-700 dark:text-green-300 md:text-3xl">
                 {stats.minor}
               </p>
@@ -177,6 +192,7 @@ export default function DashboardContent() {
           </div>
         </div>
       </div>
+
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Chart Section */}
@@ -238,8 +254,8 @@ export default function DashboardContent() {
                     report.accident_type.severity === '심각'
                       ? 'bg-red-100 text-red-800 dark:bg-red-900/30'
                       : report.accident_type.severity === '보통'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30'
-                        : 'bg-green-100 text-green-800 dark:bg-green-900/30'
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30'
+                      : 'bg-green-100 text-green-800 dark:bg-green-900/30'
                   }`}
                 >
                   {report.accident_type.severity}
@@ -252,40 +268,80 @@ export default function DashboardContent() {
 
       {/* Quick Access Cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        {quickAccessCards.map((card) => (
-          <Link
-            key={card.title}
-            href={card.link}
-            className="group flex h-auto flex-row items-center rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:flex sm:h-[140px] sm:flex-row sm:items-start sm:p-5"
-          >
-            {/* Image Section */}
-            <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:mr-4 sm:h-20 sm:w-20">
-              <Image
-                src={card.image}
-                alt={card.title}
-                fill
-                className="object-cover transition-all group-hover:scale-105"
-              />
-            </div>
+        {quickAccessCards.map((card) => {
+          const isExternal = card.external;
+          const Icon = card.icon;
 
-            {/* Content Section */}
-            <div className="flex min-w-0 flex-1 flex-col">
-              <div className="mb-1 flex items-center justify-between sm:mb-2">
-                <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1 sm:p-1.5`}>
-                  <card.icon className="h-3 w-3 text-white sm:h-4 sm:w-4" />
-                </span>
-                <ChevronRight className="h-3 w-3 text-gray-400 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
+          return isExternal ? (
+            <a
+              key={card.title}
+              href={card.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex h-auto flex-row items-center rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:flex sm:h-[140px] sm:flex-row sm:items-start sm:p-5"
+            >
+              {/* Image Section */}
+              <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:mr-4 sm:h-20 sm:w-20">
+                <Image
+                  src={card.image}
+                  alt={card.title}
+                  fill
+                  className="object-cover transition-all group-hover:scale-105"
+                />
               </div>
 
-              <h3 className="text-xs font-semibold text-gray-800 dark:text-white sm:text-sm">
-                {card.title}
-              </h3>
-              <p className="line-clamp-3 text-[10px] leading-tight text-gray-500 dark:text-gray-400 sm:line-clamp-2 sm:text-xs sm:leading-relaxed">
-                {card.description}
-              </p>
-            </div>
-          </Link>
-        ))}
+              {/* Content Section */}
+              <div className="flex min-w-0 flex-1 flex-col">
+                <div className="mb-1 flex items-center justify-between sm:mb-2">
+                  <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1 sm:p-1.5`}>
+                    <Icon className="h-3 w-3 text-white sm:h-4 sm:w-4" />
+                  </span>
+                  <ChevronRight className="h-3 w-3 text-gray-400 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
+                </div>
+
+                <h3 className="text-xs font-semibold text-gray-800 dark:text-white sm:text-sm">
+                  {card.title}
+                </h3>
+                <p className="line-clamp-3 text-[10px] leading-tight text-gray-500 dark:text-gray-400 sm:line-clamp-2 sm:text-xs sm:leading-relaxed">
+                  {card.description}
+                </p>
+              </div>
+            </a>
+          ) : (
+            <Link
+              key={card.title}
+              href={card.link}
+              className="group flex h-auto flex-row items-center rounded-xl bg-white p-3 shadow-sm transition-all hover:shadow-md dark:bg-gray-800 sm:flex sm:h-[140px] sm:flex-row sm:items-start sm:p-5"
+            >
+              {/* Image Section */}
+              <div className="relative mr-2 h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg sm:mr-4 sm:h-20 sm:w-20">
+                <Image
+                  src={card.image}
+                  alt={card.title}
+                  fill
+                  className="object-cover transition-all group-hover:scale-105"
+                />
+              </div>
+
+              {/* Content Section */}
+              <div className="flex min-w-0 flex-1 flex-col">
+                <div className="mb-1 flex items-center justify-between sm:mb-2">
+                  <span className={`rounded-lg ${card.bgColor} bg-opacity-90 p-1 sm:p-1.5`}>
+                    <Icon className="h-3 w-3 text-white sm:h-4 sm:w-4" />
+                  </span>
+                  <ChevronRight className="h-3 w-3 text-gray-400 transition-transform group-hover:translate-x-1 sm:h-4 sm:w-4" />
+                </div>
+
+                <h3 className="text-xs font-semibold text-gray-800 dark:text-white sm:text-sm">
+                  {card.title}
+                </h3>
+                <p className="line-clamp-3 text-[10px] leading-tight text-gray-500 dark:text-gray-400 sm:line-clamp-2 sm:text-xs sm:leading-relaxed">
+                  {card.description}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
