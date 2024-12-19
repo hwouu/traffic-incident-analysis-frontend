@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { UserCog } from 'lucide-react';  // UserCog 아이콘만 추가
 import {
   LayoutDashboard,
   FileText,
@@ -58,20 +59,30 @@ export default function DashboardSidebar() {
       path: '/dashboard/statistics',
     },
     {
-      name: '고속도로 교통 정보', // 이름 변경
-      icon: TrafficCone,         // 'TrafficCone' 아이콘으로 변경
-      path: 'https://www.roadplus.co.kr/main/main.do', // 외부 링크
+      name: '고속도로 교통 정보',
+      icon: TrafficCone,
+      path: 'https://www.roadplus.co.kr/main/main.do',
     },
     {
-      name: '실시간 CCTV',         // 이름 변경
-      icon: Cctv,             
-      path: 'https://www.utic.go.kr/map/map.do?menu=cctv', // 외부 링크
+      name: '실시간 CCTV',
+      icon: Cctv,
+      path: 'https://www.utic.go.kr/map/map.do?menu=cctv',
     },
     {
       name: '고객 지원',
       icon: Users,
       path: '/dashboard/service',
     },
+    // 관리자 메뉴 추가
+    ...(user?.isMaster
+      ? [
+          {
+            name: '사용자 관리',
+            icon: UserCog,
+            path: '/dashboard/admin',
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = async () => {
@@ -172,9 +183,7 @@ export default function DashboardSidebar() {
                   }`}
                 >
                   <Icon
-                    className={`h-5 w-5 ${
-                      isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
-                    }`}
+                    className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
                   />
                   {(!isCollapsed || isMobile) && <span>{item.name}</span>}
                 </a>
@@ -195,9 +204,7 @@ export default function DashboardSidebar() {
                   }`}
                 >
                   <Icon
-                    className={`h-5 w-5 ${
-                      isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
-                    }`}
+                    className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
                   />
                   {(!isCollapsed || isMobile) && <span>{item.name}</span>}
                 </Link>
@@ -213,9 +220,7 @@ export default function DashboardSidebar() {
             className="touch-action-manipulation flex w-full items-center rounded-lg p-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
           >
             <LogOut
-              className={`h-5 w-5 ${
-                isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'
-              }`}
+              className={`h-5 w-5 ${isCollapsed && !isMobile ? 'mr-3 md:mx-auto' : 'mr-3'}`}
             />
             {(!isCollapsed || isMobile) && <span>로그아웃</span>}
           </button>
