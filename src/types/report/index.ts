@@ -1,3 +1,5 @@
+// src/types/report/index.ts
+
 export interface Vehicle {
   type: string;
   color: string;

@@ -24,7 +24,6 @@ import { generateReportTitle } from '@/lib/utils/report';
 import { Toaster, toast } from 'react-hot-toast';
 import type { Report, SortField } from '@/types/report';
 
-
 export default function ReportsPage() {
   const { user } = useAuth();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -40,7 +39,6 @@ export default function ReportsPage() {
   const [selectedSeverity, setSelectedSeverity] = useState('');
   const [showLocationFilter, setShowLocationFilter] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -75,13 +73,15 @@ export default function ReportsPage() {
   // 필터링 로직
   const filteredReports = reports.filter((report) => {
     const title = generateReportTitle(report).toLowerCase();
+    const firstLocationWord = report.location.split(' ')[0];
+
     const matchesSearch =
       title.includes(searchTerm.toLowerCase()) ||
       report.location.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === '' || report.accident_type.type === selectedType;
     const matchesLocations =
       selectedLocations.length === 0 ||
-      selectedLocations.some((location) => report.location.includes(location));
+      (firstLocationWord && selectedLocations.includes(firstLocationWord));
     const matchesSeverity =
       selectedSeverity === '' || report.accident_type.severity === selectedSeverity;
 
@@ -110,7 +110,9 @@ export default function ReportsPage() {
   const uniqueAccidentTypes = Array.from(
     new Set(reports.map((report) => report.accident_type.type))
   );
-  const uniqueLocations = Array.from(new Set(reports.map((report) => report.location)));
+  const uniqueLocations = Array.from(
+    new Set(reports.map((report) => report.location.split(' ')[0]))
+  ).sort();
   const uniqueSeverities = Array.from(
     new Set(reports.map((report) => report.accident_type.severity))
   );
@@ -270,7 +272,9 @@ export default function ReportsPage() {
               {/* 지역 필터 */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">지역</label>
-                <div className="relative">
+                <div className="location-filter relative">
+                  {' '}
+                  {/* location-filter 클래스 추가 */}
                   <button
                     onClick={() => setShowLocationFilter(!showLocationFilter)}
                     className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
@@ -286,26 +290,29 @@ export default function ReportsPage() {
                   {showLocationFilter && (
                     <div className="absolute left-0 right-0 top-full z-10 mt-2 max-h-60 overflow-auto rounded-lg border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-600 dark:bg-gray-800">
                       {uniqueLocations.map((location) => (
-                        <label
+                        <div
                           key={location}
                           className="flex cursor-pointer items-center gap-2 px-2 py-1.5 text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const isSelected = selectedLocations.includes(location);
+                            if (isSelected) {
+                              setSelectedLocations(
+                                selectedLocations.filter((loc) => loc !== location)
+                              );
+                            } else {
+                              setSelectedLocations([...selectedLocations, location]);
+                            }
+                          }}
                         >
                           <input
                             type="checkbox"
                             checked={selectedLocations.includes(location)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedLocations([...selectedLocations, location]);
-                              } else {
-                                setSelectedLocations(
-                                  selectedLocations.filter((l) => l !== location)
-                                );
-                              }
-                            }}
+                            onChange={() => {}} // React에서는 controlled component를 위해 빈 핸들러 필요
                             className="rounded border-gray-300 text-primary focus:ring-primary"
                           />
                           <span className="text-sm">{location}</span>
-                        </label>
+                        </div>
                       ))}
                     </div>
                   )}

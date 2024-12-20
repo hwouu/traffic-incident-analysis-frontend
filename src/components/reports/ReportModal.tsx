@@ -187,7 +187,7 @@ export default function ReportModal({ report, onClose }: ReportModalProps) {
                       발생 시각
                     </p>
                     <p className="text-gray-900 dark:text-white">
-                      {format(new Date(report.time), 'HH:mm')}
+                      {report.time ? report.time.toString().match(/\d{2}:\d{2}/)?.[0] || '' : ''}
                     </p>
                   </div>
                 </div>
