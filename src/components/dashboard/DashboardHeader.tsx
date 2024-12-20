@@ -45,7 +45,7 @@ export default function DashboardHeader() {
            aria-label="Go to Dashboard"
          >
            <Image
-             src={theme === 'dark' ? '/images/logo-dark-with-text.svg' : '/images/logo-dark-with-text.svg'}
+             src={theme === 'dark' ? '/images/logo-dark-with-text.svg' : '/images/logo-light-with-text.svg'}
              alt="Emergency Analysis Logo"
              width={180}
              height={40}
